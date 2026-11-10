@@ -1,10 +1,10 @@
 """Rebuild the KlikBrik! catalogue site.
 Usage (from repo root):
   python3 _build/build.py <catalogue_values.json> ["Updated date text"]
-<catalogue_values.json> = Google Sheets values result for range Catalogue!A5:K700
+<catalogue_values.json> = Google Sheets values result for range Catalogue!A5:M700
 of KlikBrik_Workbook (1tOwj3ar0kDT-qIenjcNpvpceLjm7aQiBOuVLZ01hXdE), as {"values":[[...],...]}.
 Only public columns are used: set no, name, theme, where to sell, Shopee, Tokopedia,
-IG/DM price, official store price (shown as "Harga Pasaran"), status, put in catalogue.
+IG/DM price, official store price (shown as "Harga Pasaran"), status, put in catalogue, Stok KlikBrik (col M).
 Photos: any img/<setno>.jpg (Prima's own template photos) is used instead of the online photo.
 """
 import json, os, sys, shutil, datetime
@@ -19,11 +19,11 @@ def n(s):
     return int(s) if s.isdigit() else None
 out = []
 for r in src['values']:
-    r = list(r) + [''] * 12
+    r = list(r) + [''] * 14
     if r[10] != 'Yes' or not r[0] or r[0] == 'Set No': continue
     theme = r[2].strip(); theme = 'Ideas' if theme.lower() == 'ideas' else theme
     o = dict(n=r[0].strip(), name=r[1].strip(), theme=theme, ch='dm' if r[3].startswith('DM') else 'all',
-             shp=n(r[4]), tok=n(r[5]), dm=n(r[6]), ref=n(r[7]), st=r[9].strip())
+             shp=n(r[4]), tok=n(r[5]), dm=n(r[6]), ref=n(r[7]), st=r[9].strip(), rs=1 if r[12].strip()=='Ready stock' else 0)
     if o['dm']: out.append(o)
 if len(out) < 100: sys.exit(f"ABORT: only {len(out)} sets parsed - check the sheet export, site NOT changed")
 photos = sorted(f[:-4] for f in os.listdir(os.path.join(R, 'img')) if f.endswith('.jpg'))

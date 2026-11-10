@@ -93,6 +93,9 @@ header.top::after{content:"";position:absolute;inset:auto -60px -90px auto;width
 .safe-box a{display:flex;justify-content:space-between;gap:8px;text-decoration:none;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;font-weight:700}
 .safe-box small{font-size:11px;color:var(--muted);line-height:1.3}
 @media(max-width:560px){.safe-box a{flex-direction:column;gap:0}.safe-box a span:last-child{color:var(--orange-deep)}header.top::after{width:200px;height:200px;inset:auto -90px -110px auto}}
+.stk{display:inline-block;align-self:flex-start;font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px}
+.stk.rs{background:#e6f4ec;color:#127a46}
+.stk.po{background:#f1eee9;color:#6b6f76}
 .dmnote{font-size:12px;color:var(--muted);line-height:1.3}
 @media(max-width:560px){.body{padding:10px}.price .now{font-size:18px}.name{font-size:14px}.btn{font-size:13px;padding:9px 8px}}
 .more{display:block;margin:6px auto 30px;font-weight:700;padding:12px 22px;border-radius:999px;border:1.5px solid var(--ink);background:#fff}
@@ -130,7 +133,7 @@ footer p+p{margin-top:6px}
     <div class="hero">
       <h1>Set LEGO original, <em>harga lebih bersahabat.</em></h1>
       <p>Cari set impianmu, lihat harganya langsung, lalu pilih cara belanja yang paling bikin kamu tenang.</p>
-      <div class="pills"><span>100% original &amp; segel</span><span>Garansi uang kembali</span><span>PO 7 hari</span><span>Kirim ke seluruh Indonesia</span></div>
+      <div class="pills"><span>100% original &amp; segel</span><span>Garansi uang kembali</span><span>Ready stock &amp; PO</span><span>Kirim ke seluruh Indonesia</span></div>
     </div>
   </div>
 </header>
@@ -171,7 +174,7 @@ footer p+p{margin-top:6px}
     <h2>Kenapa aman belanja di KlikBrik!</h2>
     <div class="tgrid">
       <div class="t"><div class="ic">✓</div><b>Original &amp; segel</b><p>Semua set baru dan masih tersegel. Kalau terbukti tidak original, uang kembali 100%.</p></div>
-      <div class="t"><div class="ic">⏱</div><b>PO 7 hari, harga terkunci</b><p>Harga yang kamu bayar hari ini tetap berlaku, walau harga berubah setelahnya.</p></div>
+      <div class="t"><div class="ic">⏱</div><b>Ready stock atau PO, harga terkunci</b><p>Ready stock dikirim H+1, pre-order ±7 hari. Harga yang kamu bayar tetap berlaku, walau harga berubah setelahnya.</p></div>
       <div class="t"><div class="ic" style="font-size:13px;font-weight:700">Rp</div><b>Pembayaran resmi saja</b><p>Kami hanya menerima QRIS &amp; rekening resmi KlikBrik. Detailnya ada di highlight PEMBAYARAN di Instagram kami. Jangan transfer ke nomor lain.</p></div>
       <div class="t"><div class="ic">📦</div><b>Dikemas rapi</b><p>Dikirim via JNE / J&amp;T / SiCepat, nomor resi dikirim lewat chat.</p></div>
     </div>
@@ -183,7 +186,7 @@ footer p+p{margin-top:6px}
     <h2>Pertanyaan yang sering ditanya</h2>
     <details><summary>Kenapa harga Direct lebih murah dari Shopee / Tokopedia?</summary><p>Marketplace mengenakan biaya ke penjual. Kalau kamu order langsung lewat WhatsApp, biaya itu tidak ada, jadi selisihnya kami kembalikan ke kamu.</p></details>
     <details><summary>Apa bedanya beli via Shopee / Tokopedia?</summary><p>Kamu beli set yang sama di toko resmi kami di Shopee atau Tokopedia. Pembayaran ditahan marketplace dan baru diteruskan ke kami setelah paket kamu terima. Harganya sedikit lebih tinggi karena ada biaya marketplace.</p></details>
-    <details><summary>Berapa lama pesanan sampai?</summary><p>Semua order adalah PO sekitar 3–7 hari. Setelah dikirim, lama pengiriman 1–10 hari tergantung kota tujuan.</p></details>
+    <details><summary>Berapa lama pesanan sampai?</summary><p>Set bertanda <b>Ready stock</b> dikirim paling lambat besok. Set <b>Pre-order</b> siap dikirim sekitar 3–7 hari. Setelah dikirim, lama pengiriman 1–10 hari tergantung kota tujuan.</p></details>
     <details><summary>Harga bisa berubah?</summary><p>Harga kami update setiap Senin &amp; Kamis. Begitu kamu bayar, harganya terkunci.</p></details>
     <details><summary>Bisa nego?</summary><p>Harga di katalog sudah harga terbaik kami, jadi tidak ada nego. Pantau promo kami di Instagram untuk diskon spesial.</p></details>
   </div>
@@ -233,8 +236,9 @@ const BUDGETS = [
   {k:"b5",l:"Rp6 jt+",f:d=>d.dm>=6000000},
 ];
 const SPECIAL = [
+  {k:"rs",l:"✓ Ready stock",f:d=>d.rs===1,hot:true},
   {k:"ret",l:"🔥 Segera retired",f:d=>d.st==="Retiring soon"||d.st==="Retired",hot:true},
-  {k:"pre",l:"Pre-order rilis baru",f:d=>d.st==="Pre-order",hot:true},
+  {k:"pre",l:"Segera rilis",f:d=>d.st==="Pre-order",hot:true},
 ];
 const themeCounts = {}; DATA.forEach(d=>themeCounts[d.theme]=(themeCounts[d.theme]||0)+1);
 const THEMES = Object.keys(themeCounts).sort((a,b)=>themeCounts[b]-themeCounts[a]);
@@ -262,7 +266,7 @@ function filtered(){
   let list=DATA.filter(d=>(!q||q.split(/\s+/).every(w=>d.hay.includes(w))) && bf(d) && sf(d) && (!state.theme||d.theme===state.theme));
   const s=state.sort;
   const by = {
-    rec:(a,b)=>(PHOTOS.has(b.n)-PHOTOS.has(a.n))||(b.pct-a.pct)||(a.dm-b.dm),
+    rec:(a,b)=>(b.rs-a.rs)||(PHOTOS.has(b.n)-PHOTOS.has(a.n))||(b.pct-a.pct)||(a.dm-b.dm),
     low:(a,b)=>a.dm-b.dm, high:(a,b)=>b.dm-a.dm,
     save:(a,b)=>b.saving-a.saving, num:(a,b)=>a.n.localeCompare(b.n,undefined,{numeric:true})
   }[s];
@@ -272,10 +276,10 @@ function filtered(){
 function card(d){
   const tag = d.st==="Retiring soon" ? '<span class="tag ret">Segera retired</span>'
             : d.st==="Retired" ? '<span class="tag ret">Retired</span>'
-            : d.st==="Pre-order" ? '<span class="tag pre">Pre-order</span>' : '';
+            : d.st==="Pre-order" ? '<span class="tag pre">Segera rilis</span>' : '';
   const ref = d.showRef ? `<div><span class="lbl">${REF_LABEL}</span> <span class="old">${rp(d.ref)}</span></div>` : '';
   const save = d.showRef ? `<span class="save">Hemat ${rp(d.saving)}</span>` : '';
-  const msg = `Halo KlikBrik! Saya mau order:\n${d.n} ${d.name}\nHarga Spesial KlikBrik: ${rp(d.dm)}\nApakah masih bisa?`;
+  const msg = `Halo KlikBrik! Saya mau order:\n${d.n} ${d.name}\nHarga Spesial KlikBrik: ${rp(d.dm)}\n${d.rs?'Ready stock':'Pre-order'}\nApakah masih bisa?`;
   let safe;
   if (d.ch==="all" && (d.shp||d.tok)) {
     safe = `<button class="btn safe" data-safe>🛒 Beli via Shopee / Tokopedia</button>
@@ -293,6 +297,7 @@ function card(d){
       : `<img class="box" loading="lazy" src="https://cdn.rebrickable.com/media/sets/${d.n}-1.jpg" alt="${esc(d.name)}" onerror="this.parentNode.classList.add('nofoto');this.remove()"><img class="wm" src="wordmark-orange.png" alt=""><div class="fb"><b>${d.n}</b><span>${esc(d.theme)}</span></div>`}</div>
     <div class="body">
       <div class="name">${esc(d.name)}</div>
+      ${d.rs?'<span class="stk rs">✓ Ready stock · kirim H+1</span>':'<span class="stk po">Pre-order ±7 hari</span>'}
       <div class="price">${ref}<div class="lbl">Harga Spesial KlikBrik</div><div class="now">${rp(d.dm)}</div>${save}</div>
       <div class="btns">
         <a class="btn wa" href="${waLink(msg)}" target="_blank" rel="noopener">Order Direct via WA</a>
