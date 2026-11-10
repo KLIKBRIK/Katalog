@@ -93,6 +93,11 @@ header.top::after{content:"";position:absolute;inset:auto -60px -90px auto;width
 .safe-box a{display:flex;justify-content:space-between;gap:8px;text-decoration:none;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;font-weight:700}
 .safe-box small{font-size:11px;color:var(--muted);line-height:1.3}
 @media(max-width:560px){.safe-box a{flex-direction:column;gap:0}.safe-box a span:last-child{color:var(--orange-deep)}header.top::after{width:200px;height:200px;inset:auto -90px -110px auto}}
+.tag.promo{background:#e0115f;color:#fff;font-size:12px}
+.lbl.promo{color:#e0115f}
+.safe-box a s{color:#9a9ea5;font-weight:500;margin-right:4px}
+.promo-bar{background:linear-gradient(90deg,#e0115f,#ff6000);color:#fff;text-align:center;padding:12px 16px;font-weight:700;font-size:15px}
+.promo-bar small{display:block;font-weight:500;opacity:.9;font-size:12px}
 .stk{display:inline-block;align-self:flex-start;font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px}
 .stk.rs{background:#e6f4ec;color:#127a46}
 .stk.po{background:#f1eee9;color:#6b6f76}
@@ -124,6 +129,7 @@ footer p+p{margin-top:6px}
 </head>
 <body>
 
+<div class="promo-bar" id="promobar" hidden></div>
 <header class="top">
   <div class="wrap">
     <div class="bar">
@@ -205,6 +211,10 @@ footer p+p{margin-top:6px}
 <script>
 const DATA = __DATA__;
 const PHOTOS = new Set(__PHOTOS__);
+const CAMPS = __CAMP__;
+const TODAY = new Date(Date.now()+7*3600e3).toISOString().slice(0,10); // Jakarta date
+const CAMP = CAMPS.find(c => c.start <= TODAY && TODAY <= c.end) || null;
+for (let i = DATA.length-1; i >= 0; i--) if (DATA[i].x && !(CAMP && CAMP.items[DATA[i].n])) DATA.splice(i,1);
 const WA = "628126032772";
 const SHOPEE = "https://id.shp.ee/LodwY7vr";
 const TOKO = "https://www.tokopedia.com/klikbrik";
@@ -221,6 +231,8 @@ const STUDS = '<svg class="studs" viewBox="0 0 120 90" preserveAspectRatio="xMid
 
 // enrich
 DATA.forEach(d => {
+  d.cp = CAMP && CAMP.items[d.n] ? CAMP.items[d.n] : null;
+  if (d.cp) { d.dmNow = d.cp.dmS; } else { d.dmNow = d.dm; }
   d.showRef = d.ref && d.ref > d.dm;
   d.saving = d.showRef ? d.ref - d.dm : 0;
   d.pct = d.showRef ? d.saving / d.ref : 0;
@@ -229,13 +241,14 @@ DATA.forEach(d => {
 
 const BUDGETS = [
   {k:"all",l:"Semua harga",f:()=>true},
-  {k:"b1",l:"< Rp500rb",f:d=>d.dm<500000},
-  {k:"b2",l:"Rp500rb–1 jt",f:d=>d.dm>=500000&&d.dm<1000000},
-  {k:"b3",l:"Rp1–3 jt",f:d=>d.dm>=1000000&&d.dm<3000000},
-  {k:"b4",l:"Rp3–6 jt",f:d=>d.dm>=3000000&&d.dm<6000000},
-  {k:"b5",l:"Rp6 jt+",f:d=>d.dm>=6000000},
+  {k:"b1",l:"< Rp500rb",f:d=>d.dmNow<500000},
+  {k:"b2",l:"Rp500rb–1 jt",f:d=>d.dmNow>=500000&&d.dmNow<1000000},
+  {k:"b3",l:"Rp1–3 jt",f:d=>d.dmNow>=1000000&&d.dmNow<3000000},
+  {k:"b4",l:"Rp3–6 jt",f:d=>d.dmNow>=3000000&&d.dmNow<6000000},
+  {k:"b5",l:"Rp6 jt+",f:d=>d.dmNow>=6000000},
 ];
 const SPECIAL = [
+  ...(CAMP ? [{k:"camp",l:"🔥 Promo "+CAMP.name,f:d=>!!d.cp,hot:true}] : []),
   {k:"rs",l:"✓ Ready stock",f:d=>d.rs===1,hot:true},
   {k:"ret",l:"🔥 Segera retired",f:d=>d.st==="Retiring soon"||d.st==="Retired",hot:true},
   {k:"pre",l:"Segera rilis",f:d=>d.st==="Pre-order",hot:true},
@@ -243,7 +256,7 @@ const SPECIAL = [
 const themeCounts = {}; DATA.forEach(d=>themeCounts[d.theme]=(themeCounts[d.theme]||0)+1);
 const THEMES = Object.keys(themeCounts).sort((a,b)=>themeCounts[b]-themeCounts[a]);
 
-const state = {q:"", budget:"all", theme:null, special:null, sort:"rec", shown:48};
+const state = {q:"", budget:"all", theme:null, special:CAMP?"camp":null, sort:"rec", shown:48};
 const $ = id => document.getElementById(id);
 
 function chip(label, pressed, onClick, hot){
@@ -266,30 +279,43 @@ function filtered(){
   let list=DATA.filter(d=>(!q||q.split(/\s+/).every(w=>d.hay.includes(w))) && bf(d) && sf(d) && (!state.theme||d.theme===state.theme));
   const s=state.sort;
   const by = {
-    rec:(a,b)=>(b.rs-a.rs)||(PHOTOS.has(b.n)-PHOTOS.has(a.n))||(b.pct-a.pct)||(a.dm-b.dm),
-    low:(a,b)=>a.dm-b.dm, high:(a,b)=>b.dm-a.dm,
-    save:(a,b)=>b.saving-a.saving, num:(a,b)=>a.n.localeCompare(b.n,undefined,{numeric:true})
+    rec:(a,b)=>((!!b.cp)-(!!a.cp))||(b.cp&&a.cp?(b.cp.dmN-b.cp.dmS)/b.cp.dmN-(a.cp.dmN-a.cp.dmS)/a.cp.dmN:0)||(b.rs-a.rs)||(PHOTOS.has(b.n)-PHOTOS.has(a.n))||(b.pct-a.pct)||(a.dm-b.dm),
+    low:(a,b)=>a.dmNow-b.dmNow, high:(a,b)=>b.dmNow-a.dmNow,
+    save:(a,b)=>(b.cp?b.cp.dmN-b.cp.dmS:b.saving)-(a.cp?a.cp.dmN-a.cp.dmS:a.saving), num:(a,b)=>a.n.localeCompare(b.n,undefined,{numeric:true})
   }[s];
   return list.sort(by);
 }
 
 function card(d){
-  const tag = d.st==="Retiring soon" ? '<span class="tag ret">Segera retired</span>'
+  const cp = d.cp;
+  const tag = cp ? `<span class="tag promo">${esc(CAMP.name)} −${esc(cp.disc)}</span>`
+            : d.st==="Retiring soon" ? '<span class="tag ret">Segera retired</span>'
             : d.st==="Retired" ? '<span class="tag ret">Retired</span>'
             : d.st==="Pre-order" ? '<span class="tag pre">Segera rilis</span>' : '';
-  const ref = d.showRef ? `<div><span class="lbl">${REF_LABEL}</span> <span class="old">${rp(d.ref)}</span></div>` : '';
-  const save = d.showRef ? `<span class="save">Hemat ${rp(d.saving)}</span>` : '';
-  const msg = `Halo KlikBrik! Saya mau order:\n${d.n} ${d.name}\nHarga Spesial KlikBrik: ${rp(d.dm)}\n${d.rs?'Ready stock':'Pre-order'}\nApakah masih bisa?`;
+  let price;
+  if (cp) {
+    price = `<div><span class="lbl">Harga normal</span> <span class="old">${rp(cp.dmN)}</span></div><div class="lbl promo">Harga Promo ${esc(CAMP.name)}</div><div class="now">${rp(cp.dmS)}</div><span class="save">Hemat ${rp(cp.dmN-cp.dmS)}</span>`;
+  } else {
+    const ref = d.showRef ? `<div><span class="lbl">${REF_LABEL}</span> <span class="old">${rp(d.ref)}</span></div>` : '';
+    const save = d.showRef ? `<span class="save">Hemat ${rp(d.saving)}</span>` : '';
+    price = `${ref}<div class="lbl">Harga Spesial KlikBrik</div><div class="now">${rp(d.dm)}</div>${save}`;
+  }
+  const msg = cp
+    ? `Halo KlikBrik! Saya mau order PROMO ${CAMP.name}:\n${d.n} ${d.name}\nHarga promo: ${rp(cp.dmS)} (normal ${rp(cp.dmN)})\n${d.rs?'Ready stock':'Pre-order'}\nApakah masih bisa?`
+    : `Halo KlikBrik! Saya mau order:\n${d.n} ${d.name}\nHarga Spesial KlikBrik: ${rp(d.dm)}\n${d.rs?'Ready stock':'Pre-order'}\nApakah masih bisa?`;
+  const mp = (label, url, normal, sale) => normal||sale ? `<a href="${url}" target="_blank" rel="noopener" data-copy="${d.n}"><span>${label}</span><span>${sale?`<s>${rp(normal)}</s> ${rp(sale)}`:rp(normal)}</span></a>` : '';
+  let shpN=d.shp, shpS=null, tokN=d.tok, tokS=null;
+  if (cp && cp.mkt!=="none") { shpN=cp.shpN||d.shp; shpS=cp.shpS; if (cp.mkt==="all") { tokN=cp.tokN||d.tok; tokS=cp.tokS; } }
   let safe;
-  if (d.ch==="all" && (d.shp||d.tok)) {
+  if (d.ch==="all" && (shpN||tokN)) {
     safe = `<button class="btn safe" data-safe>🛒 Beli via Shopee / Tokopedia</button>
       <div class="safe-box">
-        ${d.shp?`<a href="${SHOPEE}" target="_blank" rel="noopener" data-copy="${d.n}"><span>Shopee</span><span>${rp(d.shp)}</span></a>`:''}
-        ${d.tok?`<a href="${TOKO}" target="_blank" rel="noopener" data-copy="${d.n}"><span>Tokopedia</span><span>${rp(d.tok)}</span></a>`:''}
-        <small>Klik Shopee atau Tokopedia untuk membuka toko kami, lalu tempel nomor set <b>${d.n}</b> di kolom pencarian (nomornya otomatis tersalin).</small>
+        ${mp('Shopee', SHOPEE, shpN, shpS)}
+        ${mp('Tokopedia', TOKO, tokN, tokS)}
+        <small>Klik Shopee atau Tokopedia untuk membuka toko kami, lalu tempel nomor set <b>${d.n}</b> di kolom pencarian (nomornya otomatis tersalin).${cp&&cp.mkt==="none"?' Promo hanya berlaku untuk order Direct.':''}</small>
       </div>`;
   } else {
-    safe = `<div class="dmnote">Set ini khusus order Direct.</div>`;
+    safe = `<div class="dmnote">Set ini khusus order Direct${cp?' (promo berlaku via WA)':''}.</div>`;
   }
   return `<article class="card">
     <div class="pic">${tag}${PHOTOS.has(d.n)
@@ -298,7 +324,7 @@ function card(d){
     <div class="body">
       <div class="name">${esc(d.name)}</div>
       ${d.rs?'<span class="stk rs">✓ Ready stock · kirim H+1</span>':'<span class="stk po">Pre-order ±7 hari</span>'}
-      <div class="price">${ref}<div class="lbl">Harga Spesial KlikBrik</div><div class="now">${rp(d.dm)}</div>${save}</div>
+      <div class="price">${price}</div>
       <div class="btns">
         <a class="btn wa" href="${waLink(msg)}" target="_blank" rel="noopener">Order Direct via WA</a>
         ${safe}
@@ -329,6 +355,13 @@ $("sort").addEventListener("change", e=>{state.sort=e.target.value;render();});
 $("more").addEventListener("click", ()=>{state.shown+=48;render();});
 $("fab").href = waLink("Halo KlikBrik! Saya mau tanya soal set LEGO.");
 $("askwa").href = waLink("Halo KlikBrik! Saya cari set ini, ada nggak ya? ");
+if (CAMP) {
+  const n = DATA.filter(d=>d.cp).length;
+  const maxd = Math.max(...DATA.filter(d=>d.cp).map(d=>Math.round((1-d.cp.dmS/d.cp.dmN)*100)));
+  const pb = $("promobar"); pb.hidden = false;
+  const endTxt = CAMP.start===CAMP.end ? "hari ini saja, sampai 23.59 WIB" : "sampai " + new Date(CAMP.end+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"long"}) + " 23.59 WIB";
+  pb.innerHTML = `🔥 PROMO ${esc(CAMP.name)}: diskon s.d ${maxd}% untuk ${n} set<small>${endTxt} · bayar selama promo = harga terkunci</small>`;
+}
 drawChips(); render();
 </script>
 </body>
