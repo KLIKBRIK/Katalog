@@ -27,7 +27,7 @@ def active(guide_path, salelist_path=None, today=None):
     if salelist_path:
         for r in load(salelist_path):
             r = list(r) + [''] * 14
-            if r[0].strip().isdigit(): tok[r[0].strip()] = (n(r[10]), n(r[11]))  # Toko normal, Toko sale
+            if r[0].strip().isdigit(): tok[r[0].strip()] = (n(r[10]), n(r[11]), n(r[8]), n(r[9]))  # Toko N/S, Shopee N/S
     camps = {}
     for r in load(guide_path):
         r = list(r) + [''] * 12
@@ -41,9 +41,9 @@ def active(guide_path, salelist_path=None, today=None):
         if not dmN or not dmS or dmS >= dmN: continue
         it = dict(disc=r[4].strip(), dmN=dmN, dmS=dmS, mkt=mkt)
         if mkt != 'none':
-            it['shpN'], it['shpS'] = n(r[6]), n(r[7])
+            tn, ts, sn_, ss = tok.get(setno, (None,) * 4) if name == '11.11' else (None,) * 4
+            it['shpN'], it['shpS'] = (sn_, ss) if ss else (n(r[6]), n(r[7]))
             if mkt == 'all':
-                tn, ts = tok.get(setno, (None, None)) if name == '11.11' else (None, None)
                 it['tokN'], it['tokS'] = (tn, ts) if ts else (n(r[6]), n(r[7]))
         c = camps.setdefault(name, dict(name=name, start=s.isoformat(), end=e.isoformat(), items={}))
         c['items'][setno] = it

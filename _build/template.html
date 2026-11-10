@@ -102,7 +102,8 @@ header.top::after{content:"";position:absolute;inset:auto -60px -90px auto;width
 .tab{flex:1;padding:11px 8px;border-radius:11px;font-weight:700;font-size:15px;color:#6b6f76}
 .tab[aria-selected=true]{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.08)}
 #tab-promo[aria-selected=true]{background:linear-gradient(90deg,#e0115f,#ff6000);color:#fff}
-.promo-bar a{color:#fff}
+.promo-bar{cursor:pointer}
+.pbgo{display:inline-block;margin-top:6px;background:#fff;color:#e0115f;font-size:13px;padding:5px 12px;border-radius:999px}
 .stk{display:inline-block;align-self:flex-start;font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px}
 .stk.rs{background:#e6f4ec;color:#127a46}
 .stk.po{background:#f1eee9;color:#6b6f76}
@@ -384,8 +385,8 @@ if (CAMP) {
   $("tab-promo").textContent = "🔥 Promo " + CAMP.name + " (" + DATA.filter(d=>d.cp).length + ")";
   $("tab-promo").onclick = () => setTab(true, true);
   $("tab-all").onclick = () => setTab(false, true);
-  $("promobar").insertAdjacentHTML("beforeend", ' <a href="#promo" id="pblink">Lihat promo →</a>');
-  $("pblink").onclick = e => { e.preventDefault(); setTab(true, true); document.querySelector(".controls").scrollIntoView({behavior:"smooth"}); };
+  $("promobar").insertAdjacentHTML("beforeend", '<span class="pbgo">Lihat promo →</span>');
+  $("promobar").onclick = () => { setTab(true, true); document.querySelector(".controls").scrollIntoView({behavior:"smooth"}); };
   window.addEventListener("hashchange", () => setTab(location.hash !== "#semua", false));
   setTab(location.hash !== "#semua", false);
 } else { drawChips(); render(); }
