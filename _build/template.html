@@ -98,6 +98,11 @@ header.top::after{content:"";position:absolute;inset:auto -60px -90px auto;width
 .safe-box a s{color:#9a9ea5;font-weight:500;margin-right:4px}
 .promo-bar{background:linear-gradient(90deg,#e0115f,#ff6000);color:#fff;text-align:center;padding:12px 16px;font-weight:700;font-size:15px}
 .promo-bar small{display:block;font-weight:500;opacity:.9;font-size:12px}
+.tabs{display:flex;gap:6px;margin-bottom:10px;background:#efe9e0;padding:4px;border-radius:14px}
+.tab{flex:1;padding:11px 8px;border-radius:11px;font-weight:700;font-size:15px;color:#6b6f76}
+.tab[aria-selected=true]{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+#tab-promo[aria-selected=true]{background:linear-gradient(90deg,#e0115f,#ff6000);color:#fff}
+.promo-bar a{color:#fff}
 .stk{display:inline-block;align-self:flex-start;font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px}
 .stk.rs{background:#e6f4ec;color:#127a46}
 .stk.po{background:#f1eee9;color:#6b6f76}
@@ -153,6 +158,10 @@ footer p+p{margin-top:6px}
 
 <div class="controls">
   <div class="wrap">
+    <div class="tabs" id="tabs" hidden>
+      <button class="tab" id="tab-promo"></button>
+      <button class="tab" id="tab-all">Semua set</button>
+    </div>
     <div class="search">
       <input id="q" type="search" placeholder="Cari nama atau nomor set… (mis. 75454, Titanic)" autocomplete="off">
       <select id="sort" aria-label="Urutkan">
@@ -248,7 +257,7 @@ const BUDGETS = [
   {k:"b5",l:"Rp6 jt+",f:d=>d.dmNow>=6000000},
 ];
 const SPECIAL = [
-  ...(CAMP ? [{k:"camp",l:"🔥 Promo "+CAMP.name,f:d=>!!d.cp,hot:true}] : []),
+  {k:"camp",l:"",f:d=>!!d.cp,hidden:true},
   {k:"rs",l:"✓ Ready stock",f:d=>d.rs===1,hot:true},
   {k:"ret",l:"🔥 Segera retired",f:d=>d.st==="Retiring soon"||d.st==="Retired",hot:true},
   {k:"pre",l:"Segera rilis",f:d=>d.st==="Pre-order",hot:true},
@@ -266,7 +275,7 @@ function chip(label, pressed, onClick, hot){
 function drawChips(){
   const bw=$("budget"); bw.innerHTML="";
   BUDGETS.forEach(b=>bw.appendChild(chip(b.l, state.budget===b.k, ()=>{state.budget=b.k;state.shown=48;drawChips();render();})));
-  SPECIAL.forEach(s=>bw.appendChild(chip(s.l, state.special===s.k, ()=>{state.special=state.special===s.k?null:s.k;state.shown=48;drawChips();render();}, true)));
+  SPECIAL.filter(s=>!s.hidden).forEach(s=>bw.appendChild(chip(s.l, state.special===s.k, ()=>{state.special=state.special===s.k?null:s.k;state.shown=48;drawChips();render();}, true)));
   const tw=$("themes"); tw.innerHTML="";
   tw.appendChild(chip("Semua tema", !state.theme, ()=>{state.theme=null;state.shown=48;drawChips();render();}));
   THEMES.forEach(t=>tw.appendChild(chip(t+" ("+themeCounts[t]+")", state.theme===t, ()=>{state.theme=state.theme===t?null:t;state.shown=48;drawChips();render();})));
@@ -362,7 +371,24 @@ if (CAMP) {
   const endTxt = CAMP.start===CAMP.end ? "hari ini saja, sampai 23.59 WIB" : "sampai " + new Date(CAMP.end+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"long"}) + " 23.59 WIB";
   pb.innerHTML = `🔥 PROMO ${esc(CAMP.name)}: diskon s.d ${maxd}% untuk ${n} set<small>${endTxt} · bayar selama promo = harga terkunci</small>`;
 }
-drawChips(); render();
+function setTab(promo, push){
+  state.special = promo ? "camp" : (state.special==="camp" ? null : state.special);
+  state.shown = 48;
+  $("tab-promo").setAttribute("aria-selected", promo?"true":"false");
+  $("tab-all").setAttribute("aria-selected", promo?"false":"true");
+  if (push) { try { history.replaceState(null, "", promo ? "#promo" : "#semua"); } catch(_){} }
+  drawChips(); render();
+}
+if (CAMP) {
+  $("tabs").hidden = false;
+  $("tab-promo").textContent = "🔥 Promo " + CAMP.name + " (" + DATA.filter(d=>d.cp).length + ")";
+  $("tab-promo").onclick = () => setTab(true, true);
+  $("tab-all").onclick = () => setTab(false, true);
+  $("promobar").insertAdjacentHTML("beforeend", ' <a href="#promo" id="pblink">Lihat promo →</a>');
+  $("pblink").onclick = e => { e.preventDefault(); setTab(true, true); document.querySelector(".controls").scrollIntoView({behavior:"smooth"}); };
+  window.addEventListener("hashchange", () => setTab(location.hash !== "#semua", false));
+  setTab(location.hash !== "#semua", false);
+} else { drawChips(); render(); }
 </script>
 </body>
 </html>
