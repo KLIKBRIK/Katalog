@@ -61,8 +61,28 @@ wm_w = int(S * 0.18)
 WM = WM.resize((wm_w, round(WM.height * wm_w / WM.width)), Image.LANCZOS)
 
 
+def dark_background(im):
+    w, h = im.size
+    pts = [(2, 2), (w - 3, 2), (2, h - 3), (w - 3, h - 3), (w // 2, 2), (w // 2, h - 3)]
+    vals = [sum(im.getpixel(p)) / 3 for p in pts]
+    return sum(v < 45 for v in vals) >= 4
+
+
+def compose_dark(prod):
+    # official photo on a dark background: fill the square with that dark tone
+    tone = tuple(sorted(prod.getpixel(p)[i] for p in [(2, 2), (prod.width - 3, prod.height - 3)])[0] for i in range(3))
+    canvas = Image.new('RGB', (S, S), tone)
+    prod = prod.copy()
+    prod.thumbnail((int(S * 0.92), int(S * 0.86)), Image.LANCZOS)
+    canvas.paste(prod, ((S - prod.width) // 2, (S - prod.height) // 2 - int(S * 0.02)))
+    canvas.paste(WM, (S - wm_w - int(S * 0.035), S - WM.height - int(S * 0.03)), WM)
+    return canvas
+
+
 def compose(raw):
     prod = Image.open(io.BytesIO(raw)).convert('RGB')
+    if dark_background(prod):
+        return compose_dark(prod)
     bw, bh = int(S * 0.76), int(S * 0.62)
     prod.thumbnail((bw, bh), Image.LANCZOS)
     x = (S - prod.width) // 2
