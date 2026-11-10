@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - '_marketplace/sets.txt'
+      - '_marketplace/box_urls.csv'
       - '_marketplace/build_assets.py'
       - '.github/workflows/marketplace-assets.yml'
 
@@ -31,7 +32,7 @@ jobs:
         run: |
           git config user.name "klikbrik-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add mp _marketplace/specs.csv _marketplace/missing_images.txt
+          git add mp _marketplace/specs.csv _marketplace/missing_images.txt _marketplace/box_urls.csv
           if git diff --cached --quiet; then echo "nothing new"; exit 0; fi
           git commit -m "Marketplace photos + set specs"
           for i in 1 2 3; do git pull --rebase origin main && git push origin HEAD:main && exit 0; sleep 10; done

@@ -80,7 +80,14 @@ def compose_dark(prod):
 
 
 def compose(raw):
-    prod = Image.open(io.BytesIO(raw)).convert('RGB')
+    src = Image.open(io.BytesIO(raw))
+    if src.mode in ('RGBA', 'LA', 'P'):
+        src = src.convert('RGBA')
+        flat = Image.new('RGB', src.size, 'white')
+        flat.paste(src, mask=src.split()[-1])
+        prod = flat
+    else:
+        prod = src.convert('RGB')
     if dark_background(prod):
         return compose_dark(prod)
     bw, bh = int(S * 0.76), int(S * 0.62)
@@ -170,6 +177,62 @@ with open(SPECS, 'w', newline='') as f:
     w.writeheader()
     for n in sorted(specs):
         w.writerow(specs[n])
+
+# second photo: box front from LEGO.com product pages (URLs cached in _marketplace/box_urls.csv)
+BOX = os.path.join(R, '_marketplace', 'box_urls.csv')
+boxes = {}
+if os.path.exists(BOX):
+    for row in csv.DictReader(open(BOX)):
+        boxes[row['set']] = row
+blocked = 0
+for n in sets:
+    if n in boxes or blocked >= 5:
+        continue
+    req = urllib.request.Request(f'https://www.lego.com/en-sg/product/x-{n}', headers={
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130 Safari/537.36',
+        'Accept-Language': 'en-SG,en;q=0.9'})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            t = r.read().decode('utf-8', 'ignore')
+        urls = list(dict.fromkeys(u for u in re.findall(r'https://www\.lego\.com/cdn/cs/set/assets/[^"\'?\s\\]+', t) if n in u))
+        pick = (next((u for u in urls if re.search(r'_Box1_', u, re.I)), None)
+                or next((u for u in urls if 'boxprod' in u.lower()), None)
+                or next((u for u in urls if re.search(r'_alt1\.', u)), None) or '')
+        boxes[n] = {'set': n, 'url': pick}
+        blocked = 0
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            boxes[n] = {'set': n, 'url': ''}
+        else:
+            blocked += 1
+            print('lego.com', e.code, n)
+    except Exception as e:
+        blocked += 1
+        print('lego.com error', n, e)
+    time.sleep(3)
+with open(BOX, 'w', newline='') as f:
+    w = csv.DictWriter(f, fieldnames=['set', 'url'])
+    w.writeheader()
+    for k in sorted(boxes):
+        w.writerow({'set': k, 'url': boxes[k].get('url', '')})
+box_new = 0
+if True:
+    for row in boxes.values():
+        n, url = row['set'], row.get('url', '')
+        dest = os.path.join(OUT, f'{n}_box.jpg')
+        if not url or os.path.exists(dest):
+            continue
+        raw = get(url + '?format=jpg&width=1400&bg-color=ffffff')
+        if not raw:
+            raw = get(url)
+        if raw:
+            try:
+                compose(raw).save(dest, quality=86, optimize=True)
+                box_new += 1
+            except Exception as e:
+                print('box error', n, e)
+        time.sleep(0.3)
+print('box photos new:', box_new)
 
 missing = [n for n in sets if not os.path.exists(os.path.join(OUT, f'{n}.jpg'))]
 open(os.path.join(R, '_marketplace', 'missing_images.txt'), 'w').write('\n'.join(missing) + ('\n' if missing else ''))
