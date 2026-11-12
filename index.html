@@ -333,7 +333,7 @@ function card(d){
       : `<img class="box" loading="lazy" src="https://cdn.rebrickable.com/media/sets/${d.n}-1.jpg" alt="${esc(d.name)}" onerror="this.parentNode.classList.add('nofoto');this.remove()"><img class="wm" src="wordmark-orange.png" alt=""><div class="fb"><b>${d.n}</b><span>${esc(d.theme)}</span></div>`}</div>
     <div class="body">
       <div class="name">${esc(d.name)}</div>
-      ${d.rs?'<span class="stk rs">✓ Ready stock · kirim H+1</span>':'<span class="stk po">Pre-order ±7 hari</span>'}
+      ${d.rs?'<span class="stk rs">✓ Ready stock · kirim H+1</span>':''}
       <div class="price">${price}</div>
       <div class="btns">
         <a class="btn wa" href="${waLink(msg)}" target="_blank" rel="noopener">Order Direct via WA</a>
