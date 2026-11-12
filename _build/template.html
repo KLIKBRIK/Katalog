@@ -360,7 +360,7 @@ $("grid").addEventListener("click", e=>{
   const c=e.target.closest("[data-copy]");
   if(c){ const n=c.dataset.copy; try{ navigator.clipboard.writeText(n).then(()=>toast("Nomor set "+n+" disalin. Tempel di kolom cari toko kami."),()=>{}); }catch(_){} }
 });
-let qT; $("q").addEventListener("input", e=>{ clearTimeout(qT); qT=setTimeout(()=>{state.q=e.target.value;state.shown=48;render();},120); });
+let qT; $("q").addEventListener("input", e=>{ clearTimeout(qT); qT=setTimeout(()=>{state.q=e.target.value;state.shown=48; if (CAMP && state.special==="camp" && state.q.trim()) setTab(false, true); else render();},120); });
 $("sort").addEventListener("change", e=>{state.sort=e.target.value;render();});
 $("more").addEventListener("click", ()=>{state.shown+=48;render();});
 $("fab").href = waLink("Halo KlikBrik! Saya mau tanya soal set LEGO.");
