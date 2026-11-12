@@ -21,7 +21,13 @@ def parse_dates(s):
     if m:
         d = datetime.date(int(m.group(3)), MON[m.group(2).lower()], int(m.group(1))); return d, d
     return None, None
+def overrides():
+    # Campaign date changes not (yet) in the sheet, e.g. an extension. {"<name>": {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"}}
+    import os
+    p = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'campaign_overrides.json')
+    return json.load(open(p)) if os.path.exists(p) else {}
 def active(guide_path, salelist_path=None, today=None):
+    ov = overrides()
     today = today or (datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None) + datetime.timedelta(hours=7)).date()
     tok = {}
     if salelist_path:
@@ -34,6 +40,9 @@ def active(guide_path, salelist_path=None, today=None):
         name, dates, setno = r[0].strip(), r[1].strip(), r[2].strip()
         if not name or not setno.isdigit(): continue
         s, e = parse_dates(dates)
+        o = ov.get(name, {})
+        if s and o.get('start'): s = datetime.date.fromisoformat(o['start'])
+        if s and o.get('end'): e = datetime.date.fromisoformat(o['end'])
         if not s or not (s <= today <= e): continue
         flag = r[5].lower()
         mkt = 'none' if 'do not' in flag else ('shopee' if 'shopee only' in flag else 'all')
