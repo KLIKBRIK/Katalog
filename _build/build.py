@@ -49,6 +49,17 @@ if A.guide:
                             ch='dm' if it['mkt']=='none' else 'all', shp=it.get('shpN'), tok=it.get('tokN'),
                             dm=it['dmN'], ref=n(r[7]), st=r[9].strip(), rs=1 if r[12].strip()=='Ready stock' else 0, x=1))
             have.add(sn)
+# Sets Prima asked to keep on the site even when the sheet leaves them out (_build/catalogue_overrides.json).
+_ov = os.path.join(B, 'catalogue_overrides.json')
+if os.path.exists(_ov):
+    have = {o['n'] for o in out}
+    for sn, it in json.load(open(_ov)).get('include', {}).items():
+        if sn in have or sn not in allrows: continue
+        r = allrows[sn]; th = r[2].strip()
+        out.append(dict(n=sn, name=r[1].strip(), theme='Ideas' if th.lower()=='ideas' else th, ch=it.get('ch', 'all'),
+                        shp=it.get('shp'), tok=it.get('tok'), dm=it['dm'], ref=n(r[7]), st=r[9].strip(),
+                        rs=1 if r[12].strip()=='Ready stock' else 0))
+        have.add(sn)
 photos = sorted(f[:-4] for f in os.listdir(os.path.join(R, 'img')) if f.endswith('.jpg'))
 t = open(os.path.join(B, 'template.html')).read()
 html = (t.replace('__PHOTOS__', json.dumps(photos))

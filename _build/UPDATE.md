@@ -11,3 +11,5 @@ Rules: only the Catalogue tab is used (rows with "Put in catalogue?" = Yes). Nev
 New own photos: put a 720x720 JPG as img/<setno>.jpg.
 
 Stock: Admin column AZ "STOK KLIKBRIK (website)" (Ready stock / Pre-order, blank = Pre-order) → Catalogue column M → website badge.
+
+Keep-on-site list: `_build/catalogue_overrides.json` "include" lists sets that stay on the site (with fixed prices) even if the sheet says "Put in catalogue?" = No. Remove an entry to let the sheet decide again.
