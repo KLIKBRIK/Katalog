@@ -278,10 +278,31 @@ function drawChips(){
   BUDGETS.forEach(b=>bw.appendChild(chip(b.l, state.budget===b.k, ()=>{state.budget=b.k;state.shown=48;drawChips();render();})));
   SPECIAL.filter(s=>!s.hidden).forEach(s=>bw.appendChild(chip(s.l, state.special===s.k, ()=>{state.special=state.special===s.k?null:s.k;state.shown=48;drawChips();render();}, true)));
   const tw=$("themes"); tw.innerHTML="";
-  tw.appendChild(chip("Semua tema", !state.theme, ()=>{state.theme=null;state.shown=48;drawChips();render();}));
-  THEMES.forEach(t=>tw.appendChild(chip(t+" ("+themeCounts[t]+")", state.theme===t, ()=>{state.theme=state.theme===t?null:t;state.shown=48;drawChips();render();})));
+  if (state.theme) { const sb=chip("🔗 Bagikan link "+state.theme, false, shareTheme, true); sb.id="sharetheme"; tw.appendChild(sb); }
+  tw.appendChild(chip("Semua tema", !state.theme, ()=>pickTheme(null)));
+  THEMES.forEach(t=>tw.appendChild(chip(t+" ("+themeCounts[t]+")", state.theme===t, ()=>pickTheme(state.theme===t?null:t))));
 }
 
+// Each theme has its own link: ?tema=star-wars
+const slug = t => t.toLowerCase().replace(/&/g,"and").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const BASE_TITLE = document.title;
+function themeFromUrl(){ const v=new URLSearchParams(location.search).get("tema"); return v ? (THEMES.find(t=>slug(t)===slug(v))||null) : null; }
+function themeUrl(t){ const u=new URL(location.href); if (t) u.searchParams.set("tema", slug(t)); else u.searchParams.delete("tema"); if (t && u.hash==="#promo") u.hash="#semua"; return u.toString(); }
+function applyTheme(t){ state.theme=t; state.shown=48; document.title = t ? t+" · "+BASE_TITLE : BASE_TITLE; }
+function pickTheme(t){
+  applyTheme(t);
+  try { history.pushState(null, "", themeUrl(t)); } catch(_){}
+  if (t && CAMP && state.special==="camp") { setTab(false, false); return; }
+  drawChips(); render();
+}
+function shareTheme(){
+  const url = themeUrl(state.theme), text = "Koleksi LEGO " + state.theme + " di KlikBrik!";
+  if (navigator.share) { navigator.share({title:text, url}).catch(()=>{}); return; }
+  const done = ()=>{ const b=document.getElementById("sharetheme"); if (b) { b.textContent="✓ Link tersalin"; setTimeout(drawChips, 1800); } };
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, ()=>prompt("Salin link ini:", url)); else prompt("Salin link ini:", url);
+}
+window.addEventListener("popstate", ()=>{ applyTheme(themeFromUrl()); drawChips(); render(); });
+applyTheme(themeFromUrl());
 function filtered(){
   const q=state.q.trim().toLowerCase();
   const bf=BUDGETS.find(b=>b.k===state.budget).f;
@@ -388,8 +409,9 @@ if (CAMP) {
   $("promobar").insertAdjacentHTML("beforeend", '<span class="pbgo">Lihat promo →</span>');
   $("promobar").onclick = () => { setTab(true, true); document.querySelector(".controls").scrollIntoView({behavior:"smooth"}); };
   window.addEventListener("hashchange", () => setTab(location.hash !== "#semua", false));
-  setTab(location.hash !== "#semua", false);
+  setTab(location.hash === "#promo" || (location.hash !== "#semua" && !state.theme), false);
 } else { drawChips(); render(); }
+if (state.theme) requestAnimationFrame(()=>document.querySelector(".controls").scrollIntoView());
 </script>
 </body>
 </html>
