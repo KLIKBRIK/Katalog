@@ -57,7 +57,7 @@ if os.path.exists(_ov):
         if sn in have or sn not in allrows: continue
         r = allrows[sn]; th = r[2].strip()
         out.append(dict(n=sn, name=r[1].strip(), theme='Ideas' if th.lower()=='ideas' else th, ch=it.get('ch', 'all'),
-                        shp=it.get('shp'), tok=it.get('tok'), dm=it['dm'], ref=n(r[7]), st=r[9].strip(),
+                        shp=it.get('shp'), tok=it.get('tok'), dm=it['dm'], ref=n(r[7]), st=it.get('st', r[9].strip()),
                         rs=1 if r[12].strip()=='Ready stock' else 0))
         have.add(sn)
 photos = sorted(f[:-4] for f in os.listdir(os.path.join(R, 'img')) if f.endswith('.jpg'))
