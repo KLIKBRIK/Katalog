@@ -195,7 +195,7 @@ footer p+p{margin-top:6px}
     <h2>Kenapa aman belanja di KlikBrik!</h2>
     <div class="tgrid">
       <div class="t"><div class="ic">✓</div><b>Original &amp; segel</b><p>Semua set baru dan masih tersegel. Kalau terbukti tidak original, uang kembali 100%.</p></div>
-      <div class="t"><div class="ic">⏱</div><b>Ready stock atau PO, harga terkunci</b><p>Ready stock dikirim H+1, pre-order ±7 hari. Harga yang kamu bayar tetap berlaku, walau harga berubah setelahnya.</p></div>
+      <div class="t"><div class="ic">⏱</div><b>Ready stock atau PO, harga terkunci</b><p>Ready stock sudah ada di tangan kami, pre-order ±7 hari. Harga yang kamu bayar tetap berlaku, walau harga berubah setelahnya.</p></div>
       <div class="t"><div class="ic" style="font-size:13px;font-weight:700">Rp</div><b>Pembayaran resmi saja</b><p>Kami hanya menerima QRIS &amp; rekening resmi KlikBrik. Detailnya ada di highlight PEMBAYARAN di Instagram kami. Jangan transfer ke nomor lain.</p></div>
       <div class="t"><div class="ic">📦</div><b>Dikemas rapi</b><p>Dikirim via JNE / J&amp;T / SiCepat, nomor resi dikirim lewat chat.</p></div>
     </div>
@@ -207,7 +207,7 @@ footer p+p{margin-top:6px}
     <h2>Pertanyaan yang sering ditanya</h2>
     <details><summary>Kenapa harga Direct lebih murah dari Shopee / Tokopedia?</summary><p>Marketplace mengenakan biaya ke penjual. Kalau kamu order langsung lewat WhatsApp, biaya itu tidak ada, jadi selisihnya kami kembalikan ke kamu.</p></details>
     <details><summary>Apa bedanya beli via Shopee / Tokopedia?</summary><p>Kamu beli set yang sama di toko resmi kami di Shopee atau Tokopedia. Pembayaran ditahan marketplace dan baru diteruskan ke kami setelah paket kamu terima. Harganya sedikit lebih tinggi karena ada biaya marketplace.</p></details>
-    <details><summary>Berapa lama pesanan sampai?</summary><p>Set bertanda <b>Ready stock</b> dikirim paling lambat besok. Set <b>Pre-order</b> siap dikirim sekitar 3–7 hari. Setelah dikirim, lama pengiriman 1–10 hari tergantung kota tujuan.</p></details>
+    <details><summary>Berapa lama pesanan sampai?</summary><p>Set bertanda <b>Ready stock</b> sudah ada di tangan kami, jadi bisa langsung diproses setelah pembayaran. Set <b>Pre-order</b> siap dikirim sekitar 3–7 hari. Setelah dikirim, lama pengiriman 1–10 hari tergantung kota tujuan.</p></details>
     <details><summary>Harga bisa berubah?</summary><p>Harga kami update setiap Senin &amp; Kamis. Begitu kamu bayar, harganya terkunci.</p></details>
     <details><summary>Bisa nego?</summary><p>Harga di katalog sudah harga terbaik kami, jadi tidak ada nego. Pantau promo kami di Instagram untuk diskon spesial.</p></details>
   </div>
@@ -364,7 +364,7 @@ function card(d){
     <div class="body">
       <a class="name" href="set/${d.n}/">${esc(d.name)}</a>
       <div class="setno">No. set ${d.n} · <a class="spec" href="set/${d.n}/">Lihat spesifikasi →</a></div>
-      ${d.rs?'<span class="stk rs">✓ Ready stock · kirim H+1</span>':''}
+      ${d.rs?'<span class="stk rs">✓ Ready stock</span>':''}
       <div class="price">${price}</div>
       <div class="btns">
         <a class="btn wa" href="${waLink(msg)}" target="_blank" rel="noopener">Order Direct via WA</a>

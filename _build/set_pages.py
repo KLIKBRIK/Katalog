@@ -162,7 +162,7 @@ def spec_rows(d, sp):
         rows.append(("Berat (perkiraan)", f"{int(float(sp['weight_g'])) / 1000:.2f}".replace('.', ',') + " kg"))
     st = d.get('st', '')
     rows.append(("Status set", {"Retiring soon": "Segera retired", "Retired": "Retired", "Pre-order": "Segera rilis"}.get(st, "Tersedia")))
-    rows.append(("Ketersediaan", "Ready stock — dikirim paling lambat besok" if d.get('rs') else "Pre-order — siap dikirim sekitar 3–7 hari"))
+    rows.append(("Ketersediaan", "Ready stock — sudah ada di tangan kami" if d.get('rs') else "Pre-order — siap dikirim sekitar 3–7 hari"))
     rows.append(("Kondisi", "100% original LEGO®, baru & segel"))
     return ''.join(f'<tr><th>{E(k)}</th><td>{E(v)}</td></tr>' for k, v in rows)
 
@@ -176,7 +176,7 @@ def page(d, all_sets, camp, photos, mp, specs, updated):
     if st == 'Retiring soon': tags.append('<span class="tag ret">Segera retired</span>')
     elif st == 'Retired': tags.append('<span class="tag ret">Retired</span>')
     elif st == 'Pre-order': tags.append('<span class="tag pre">Segera rilis</span>')
-    stock = '<span class="stk rs">✓ Ready stock · kirim H+1</span>' if d.get('rs') else '<span class="stk po">Pre-order · siap kirim ±3–7 hari</span>'
+    stock = '<span class="stk rs">✓ Ready stock</span>' if d.get('rs') else '<span class="stk po">Pre-order · siap kirim ±3–7 hari</span>'
     sp = specs.get(n, {})
     pcs = (", " + f"{int(sp['pieces']):,}".replace(",", ".") + " keping") if sp.get('pieces') else ""
     desc = f"LEGO {theme} {n} {name}{pcs}. Original & segel, harga spesial {rp(d['dm'])} di KlikBrik!. Order via WhatsApp, Shopee atau Tokopedia."
