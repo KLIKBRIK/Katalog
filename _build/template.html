@@ -79,6 +79,7 @@ header.top::after{content:"";position:absolute;inset:auto -60px -90px auto;width
 .pic .tag{z-index:2}
 .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
 .name{font-weight:700;font-size:15px;line-height:1.25}
+.setno{font-size:12px;font-weight:700;color:var(--muted);margin-top:-4px;letter-spacing:.02em}
 .price .lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
 .price .old{font-size:13px;color:var(--muted);text-decoration:line-through}
 .price .now{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:22px;color:var(--orange-deep)}
@@ -228,6 +229,8 @@ for (let i = DATA.length-1; i >= 0; i--) if (DATA[i].x && !(CAMP && CAMP.items[D
 const WA = "628126032772";
 const SHOPEE = "https://id.shp.ee/LodwY7vr";
 const TOKO = "https://www.tokopedia.com/klikbrik";
+const SHP_ITEM = id => "https://shopee.co.id/product/503293604/" + id;
+const TOK_ITEM = path => "https://www.tokopedia.com/klikbrik/" + path;
 const REF_LABEL = "__REF_LABEL__";
 
 const rp = v => "Rp" + v.toLocaleString("id-ID");
@@ -334,16 +337,16 @@ function card(d){
   const msg = cp
     ? `Halo KlikBrik! Saya mau order PROMO ${CAMP.name}:\n${d.n} ${d.name}\nHarga promo: ${rp(cp.dmS)} (normal ${rp(cp.dmN)})\n${d.rs?'Ready stock':'Pre-order'}\nApakah masih bisa?`
     : `Halo KlikBrik! Saya mau order:\n${d.n} ${d.name}\nHarga Spesial KlikBrik: ${rp(d.dm)}\n${d.rs?'Ready stock':'Pre-order'}\nApakah masih bisa?`;
-  const mp = (label, url, normal, sale) => normal||sale ? `<a href="${url}" target="_blank" rel="noopener" data-copy="${d.n}"><span>${label}</span><span>${sale?`<s>${rp(normal)}</s> ${rp(sale)}`:rp(normal)}</span></a>` : '';
+  const mp = (label, url, normal, sale, direct) => normal||sale ? `<a href="${direct||url}" target="_blank" rel="noopener"${direct?'':` data-copy="${d.n}"`}><span>${label}</span><span>${sale?`<s>${rp(normal)}</s> ${rp(sale)}`:rp(normal)}</span></a>` : '';
   let shpN=d.shp, shpS=null, tokN=d.tok, tokS=null;
   if (cp && cp.mkt!=="none") { shpN=cp.shpN||d.shp; shpS=cp.shpS; if (cp.mkt==="all") { tokN=cp.tokN||d.tok; tokS=cp.tokS; } }
   let safe;
   if (d.ch==="all" && (shpN||tokN)) {
     safe = `<button class="btn safe" data-safe>🛒 Beli via Shopee / Tokopedia</button>
       <div class="safe-box">
-        ${mp('Shopee', SHOPEE, shpN, shpS)}
-        ${mp('Tokopedia', TOKO, tokN, tokS)}
-        <small>Klik Shopee atau Tokopedia untuk membuka toko kami, lalu tempel nomor set <b>${d.n}</b> di kolom pencarian (nomornya otomatis tersalin).${cp&&cp.mkt==="none"?' Promo hanya berlaku untuk order Direct.':''}</small>
+        ${mp('Shopee', SHOPEE, shpN, shpS, d.su && SHP_ITEM(d.su))}
+        ${mp('Tokopedia', TOKO, tokN, tokS, d.tu && TOK_ITEM(d.tu))}
+        <small>${(!shpN&&!shpS||d.su)&&(!tokN&&!tokS||d.tu) ? 'Klik untuk langsung membuka halaman set ini di toko kami.' : `Klik untuk membuka toko kami${d.su||d.tu?' (atau langsung ke halaman setnya kalau sudah tersedia)':''}, lalu tempel nomor set <b>${d.n}</b> di kolom pencarian (nomornya otomatis tersalin).`}${cp&&cp.mkt==="none"?' Promo hanya berlaku untuk order Direct.':''}</small>
       </div>`;
   } else {
     safe = `<div class="dmnote">Set ini khusus order Direct${cp?' (promo berlaku via WA)':''}.</div>`;
@@ -354,6 +357,7 @@ function card(d){
       : `<img class="box" loading="lazy" src="https://cdn.rebrickable.com/media/sets/${d.n}-1.jpg" alt="${esc(d.name)}" onerror="this.parentNode.classList.add('nofoto');this.remove()"><img class="wm" src="wordmark-orange.png" alt=""><div class="fb"><b>${d.n}</b><span>${esc(d.theme)}</span></div>`}</div>
     <div class="body">
       <div class="name">${esc(d.name)}</div>
+      <div class="setno">No. set ${d.n}</div>
       ${d.rs?'<span class="stk rs">✓ Ready stock · kirim H+1</span>':''}
       <div class="price">${price}</div>
       <div class="btns">

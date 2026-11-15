@@ -60,6 +60,13 @@ if os.path.exists(_ov):
                         shp=it.get('shp'), tok=it.get('tok'), dm=it['dm'], ref=n(r[7]), st=it.get('st', r[9].strip()),
                         rs=1 if r[12].strip()=='Ready stock' else 0))
         have.add(sn)
+# Direct links to each set's own Shopee / Tokopedia listing (_build/marketplace_links.json).
+_ml = os.path.join(B, 'marketplace_links.json')
+if os.path.exists(_ml):
+    ml = json.load(open(_ml))
+    for o in out:
+        if o['n'] in ml.get('shopee', {}): o['su'] = ml['shopee'][o['n']]
+        if o['n'] in ml.get('tokopedia', {}): o['tu'] = ml['tokopedia'][o['n']]
 photos = sorted(f[:-4] for f in os.listdir(os.path.join(R, 'img')) if f.endswith('.jpg'))
 t = open(os.path.join(B, 'template.html')).read()
 html = (t.replace('__PHOTOS__', json.dumps(photos))

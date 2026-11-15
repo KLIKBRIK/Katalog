@@ -13,3 +13,8 @@ New own photos: put a 720x720 JPG as img/<setno>.jpg.
 Stock: Admin column AZ "STOK KLIKBRIK (website)" (Ready stock / Pre-order, blank = Pre-order) → Catalogue column M → website badge.
 
 Keep-on-site list: `_build/catalogue_overrides.json` "include" lists sets that stay on the site (with fixed prices) even if the sheet says "Put in catalogue?" = No. Remove an entry to let the sheet decide again.
+
+Marketplace buttons: `_build/marketplace_links.json` holds each set's own Shopee item id and Tokopedia product path, so "Beli via Shopee / Tokopedia" opens the exact listing. Sets without an entry fall back to the shop page + copied set number.
+Refresh it (needs Prima's browser, signed in to Shopee Seller Centre) whenever listings are added, deleted or delisted:
+- Shopee: in seller.shopee.co.id, GET /api/v3/opt/mpsku/list/v2/get_product_list?SPC_CDS=<from the page's own requests>&SPC_CDS_VER=2&page_number=N&page_size=48&list_type=live_all → set no = parent_sku (or the 5-digit number in the name) → item id. Shop id 503293604.
+- Tokopedia: from www.tokopedia.com, POST https://gql.tokopedia.com/graphql/ShopProducts (GetShopProduct, shopID 7495020848524330673, perPage 80, fmenu "etalase") → product_url path after /klikbrik/ (drop the ?extParam).
