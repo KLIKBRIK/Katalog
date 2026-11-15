@@ -237,6 +237,7 @@ def page(d, all_sets, camp, photos, mp, specs, updated):
 (function(){{var b=document.querySelector('[data-promo-end]');if(!b)return;var t=new Date(Date.now()+7*3600e3).toISOString().slice(0,10);
 if(t>b.getAttribute('data-promo-end')){{b.querySelector('.p-promo').hidden=true;b.querySelector('.p-normal').hidden=false;var g=document.querySelector('[data-promo]');if(g)g.remove();}}}})();
 </script>
+<script data-goatcounter="https://klikbrik.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
 """
