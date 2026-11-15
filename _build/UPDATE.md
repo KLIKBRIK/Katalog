@@ -1,8 +1,19 @@
 # Updating the KlikBrik! catalogue site
 
+## Weekly prices (Prima, 15 Nov 2026)
+Prices, stock labels and the set list change on the site ONCE A WEEK: the Sunday (Jakarta) run is the full update.
+On any other day the site is only rebuilt when a campaign runs that day (Campaign Guide), with `--keep-prices`:
+everything stays as published on Sunday and only the promo is added. Other days: no rebuild.
+Exception: Prima explicitly asks for an update now -> full update.
+The Sunday build prints `CHG <set> ...` lines + a `PRICE CHANGES` total vs last week: that list is what the team
+updates on Shopee / Tokopedia, once a week, so marketplace prices match the site.
+Shopee: the ~58 UNLISTED (hidden) listings stay unlisted - Prima switches them on/off herself per order. Never relist or
+delete them; the link refresh below only collects live listings, so they get no Shopee button.
+
 1. Read Google Sheet `KlikBrik_Workbook` (id 1tOwj3ar0kDT-qIenjcNpvpceLjm7aQiBOuVLZ01hXdE), range `Catalogue!A5:M700`, and save the raw values result as JSON (e.g. /tmp/cat.json).
-   Also read 'Campaign Guide'!A6:J700 (→ /tmp/guide.json) and '11.11 Sale List'!A5:L600 (→ /tmp/sale.json).
-2. From the repo root: `python3 _build/build.py /tmp/cat.json --guide /tmp/guide.json --salelist /tmp/sale.json`
+   Also read 'Campaign Guide'!A6:J700 (→ /tmp/guide.json).
+2. From the repo root: `python3 _build/build.py /tmp/cat.json --guide /tmp/guide.json` (Sunday / full update)
+   or add `--keep-prices` (campaign day that is not a Sunday). `--salelist` was only for 11.11 and is no longer needed.
    - Only campaigns running TODAY in Jakarta time are written into the page (future sale prices never leak early). The page itself hides a campaign once its date has passed.
    - It aborts (exit 1) without touching the site if fewer than 100 sets parse.
 3. If `git status` shows changes: commit and push to `main`. GitHub Pages republishes in ~1–2 minutes.
