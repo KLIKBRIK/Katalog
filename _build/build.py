@@ -75,4 +75,14 @@ html = (t.replace('__PHOTOS__', json.dumps(photos))
          .replace('__REF_LABEL__', 'Harga Pasaran').replace('__UPDATED__', updated))
 open(os.path.join(R, 'index.html'), 'w').write(html)
 for f in ['logo-white.svg', 'wordmark-orange.png']: shutil.copy(os.path.join(B, f), R)
-print(f"OK: {len(out)} sets, {len(photos)} own photos, campaigns today: {[(c['name'], len(c['items'])) for c in camps] or 'none'}, updated {updated}")
+# One landing page per set (set/<no>/), same data as the catalogue page.
+sys.path.insert(0, B); import set_pages
+n_pages, n_specs = set_pages.build(R, out, camps, set(photos), updated)
+# New sets get a marketplace photo + Brickset specs via the "Marketplace assets" GitHub Action.
+_st = os.path.join(R, '_marketplace', 'sets.txt')
+if os.path.exists(_st):
+    known = [l.strip() for l in open(_st) if l.strip()]
+    new = sorted({o['n'] for o in out} - set(known))
+    if new:
+        open(_st, 'w').write('\n'.join(known + new) + '\n')
+print(f"OK: {len(out)} sets, {n_pages} set pages ({n_specs} with specs), {len(photos)} own photos, campaigns today: {[(c['name'], len(c['items'])) for c in camps] or 'none'}, updated {updated}")

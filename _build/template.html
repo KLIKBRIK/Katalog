@@ -80,6 +80,10 @@ header.top::after{content:"";position:absolute;inset:auto -60px -90px auto;width
 .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
 .name{font-weight:700;font-size:15px;line-height:1.25}
 .setno{font-size:12px;font-weight:700;color:var(--muted);margin-top:-4px;letter-spacing:.02em}
+a.pic{display:block}
+a.name{text-decoration:none}
+a.name:hover{color:var(--orange-deep)}
+.setno a.spec{color:var(--orange-deep);text-decoration:none;white-space:nowrap}
 .price .lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
 .price .old{font-size:13px;color:var(--muted);text-decoration:line-through}
 .price .now{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:22px;color:var(--orange-deep)}
@@ -352,12 +356,12 @@ function card(d){
     safe = `<div class="dmnote">Set ini khusus order Direct${cp?' (promo berlaku via WA)':''}.</div>`;
   }
   return `<article class="card">
-    <div class="pic">${tag}${PHOTOS.has(d.n)
+    <a class="pic" href="set/${d.n}/" aria-label="Lihat detail ${esc(d.name)}">${tag}${PHOTOS.has(d.n)
       ? `<img class="own" loading="lazy" src="img/${d.n}.jpg" alt="${esc(d.name)}">`
-      : `<img class="box" loading="lazy" src="https://cdn.rebrickable.com/media/sets/${d.n}-1.jpg" alt="${esc(d.name)}" onerror="this.parentNode.classList.add('nofoto');this.remove()"><img class="wm" src="wordmark-orange.png" alt=""><div class="fb"><b>${d.n}</b><span>${esc(d.theme)}</span></div>`}</div>
+      : `<img class="box" loading="lazy" src="https://cdn.rebrickable.com/media/sets/${d.n}-1.jpg" alt="${esc(d.name)}" onerror="this.parentNode.classList.add('nofoto');this.remove()"><img class="wm" src="wordmark-orange.png" alt=""><div class="fb"><b>${d.n}</b><span>${esc(d.theme)}</span></div>`}</a>
     <div class="body">
-      <div class="name">${esc(d.name)}</div>
-      <div class="setno">No. set ${d.n}</div>
+      <a class="name" href="set/${d.n}/">${esc(d.name)}</a>
+      <div class="setno">No. set ${d.n} · <a class="spec" href="set/${d.n}/">Lihat spesifikasi →</a></div>
       ${d.rs?'<span class="stk rs">✓ Ready stock · kirim H+1</span>':''}
       <div class="price">${price}</div>
       <div class="btns">

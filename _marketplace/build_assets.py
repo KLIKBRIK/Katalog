@@ -134,6 +134,15 @@ def brickset(n):
     m = re.search(r'([\d.]+)\s*x\s*([\d.]+)\s*x\s*([\d.]+)\s*cm', d.get('Packaging size', ''))
     if m:
         out['pack_cm'] = 'x'.join(m.groups())
+    m = re.search(r'(\d+½?)\s*\+', d.get('Age range', ''))
+    if m:
+        out['age'] = m.group(1) + '+'
+    m = re.search(r'(19|20)\d\d', d.get('Year released', ''))
+    if m:
+        out['year'] = m.group(0)
+    m = re.search(r'\d+', d.get('Minifigs', ''))
+    if m:
+        out['minifigs'] = m.group(0)
     w = d.get('Weight', '')
     m = re.search(r'([\d.]+)\s*kg', w, re.I)
     if m:
@@ -141,6 +150,9 @@ def brickset(n):
     return out
 
 
+# checked = spec version; bump SPEC_V to re-read Brickset for every set (v2 added age, year, minifigs)
+SPEC_V = '2'
+FIELDS = ['set', 'pieces', 'pack_cm', 'weight_g', 'age', 'year', 'minifigs', 'checked']
 specs = {}
 if os.path.exists(SPECS):
     for row in csv.DictReader(open(SPECS)):
@@ -163,17 +175,19 @@ for i, n in enumerate(sets):
                     done_img += 1
                 except Exception as e:
                     print('image error', n, e)
-    if n not in specs or not specs[n].get('checked'):
+    if n not in specs or specs[n].get('checked') != SPEC_V:
         info = brickset(n)
-        specs[n] = {'set': n, 'pieces': info.get('pieces', ''), 'pack_cm': info.get('pack_cm', ''),
-                    'weight_g': info.get('weight_g', ''), 'checked': '1'}
+        old = specs.get(n, {})
+        specs[n] = {'set': n, 'checked': SPEC_V}
+        for k in FIELDS[1:-1]:
+            specs[n][k] = info.get(k, '') or old.get(k, '')
         done_spec += 1
         time.sleep(1.2)
     if i % 25 == 0:
         print(i, n, flush=True)
 
 with open(SPECS, 'w', newline='') as f:
-    w = csv.DictWriter(f, fieldnames=['set', 'pieces', 'pack_cm', 'weight_g', 'checked'])
+    w = csv.DictWriter(f, fieldnames=FIELDS, extrasaction='ignore')
     w.writeheader()
     for n in sorted(specs):
         w.writerow(specs[n])
