@@ -344,13 +344,15 @@ function card(d){
   const mp = (label, url, normal, sale, direct) => normal||sale ? `<a href="${direct||url}" target="_blank" rel="noopener"${direct?'':` data-copy="${d.n}"`}><span>${label}</span><span>${sale?`<s>${rp(normal)}</s> ${rp(sale)}`:rp(normal)}</span></a>` : '';
   let shpN=d.shp, shpS=null, tokN=d.tok, tokS=null;
   if (cp && cp.mkt!=="none") { shpN=cp.shpN||d.shp; shpS=cp.shpS; if (cp.mkt==="all") { tokN=cp.tokN||d.tok; tokS=cp.tokS; } }
+  if (!d.su) { shpN=null; shpS=null; }
+  if (!d.tu) { tokN=null; tokS=null; }
   let safe;
   if (d.ch==="all" && (shpN||tokN)) {
     safe = `<button class="btn safe" data-safe>🛒 Beli via Shopee / Tokopedia</button>
       <div class="safe-box">
         ${mp('Shopee', SHOPEE, shpN, shpS, d.su && SHP_ITEM(d.su))}
         ${mp('Tokopedia', TOKO, tokN, tokS, d.tu && TOK_ITEM(d.tu))}
-        <small>${(!shpN&&!shpS||d.su)&&(!tokN&&!tokS||d.tu) ? 'Klik untuk langsung membuka halaman set ini di toko kami.' : `Klik untuk membuka toko kami${d.su||d.tu?' (atau langsung ke halaman setnya kalau sudah tersedia)':''}, lalu tempel nomor set <b>${d.n}</b> di kolom pencarian (nomornya otomatis tersalin).`}${cp&&cp.mkt==="none"?' Promo hanya berlaku untuk order Direct.':''}</small>
+        <small>Klik untuk langsung membuka halaman set ini di toko kami.${cp&&cp.mkt==="none"?' Promo hanya berlaku untuk order Direct.':''}</small>
       </div>`;
   } else {
     safe = `<div class="dmnote">Set ini khusus order Direct${cp?' (promo berlaku via WA)':''}.</div>`;

@@ -67,6 +67,11 @@ if os.path.exists(_ml):
     for o in out:
         if o['n'] in ml.get('shopee', {}): o['su'] = ml['shopee'][o['n']]
         if o['n'] in ml.get('tokopedia', {}): o['tu'] = ml['tokopedia'][o['n']]
+# Only show a marketplace where the set really has a listing (Prima, 15 Nov 2026).
+for o in out:
+    if not o.get('su'): o['shp'] = None
+    if not o.get('tu'): o['tok'] = None
+    if o['ch'] == 'all' and not (o.get('su') or o.get('tu')): o['ch'] = 'dm'
 photos = sorted(f[:-4] for f in os.listdir(os.path.join(R, 'img')) if f.endswith('.jpg'))
 t = open(os.path.join(B, 'template.html')).read()
 html = (t.replace('__PHOTOS__', json.dumps(photos))

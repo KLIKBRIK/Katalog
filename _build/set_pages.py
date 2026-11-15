@@ -134,6 +134,8 @@ def buttons(d, cp, camp):
         shpN, shpS = cp.get('shpN') or shpN, cp.get('shpS')
         if cp.get('mkt') == 'all':
             tokN, tokS = cp.get('tokN') or tokN, cp.get('tokS')
+    if not d.get('su'): shpN = shpS = None
+    if not d.get('tu'): tokN = tokS = None
     if d.get('ch') == 'all' and (shpN or tokN):
         def mp(label, shop, normal, sale, direct):
             if not (normal or sale): return ''
@@ -141,8 +143,6 @@ def buttons(d, cp, camp):
             return f'<a class="btn mp" href="{E(direct or shop)}" target="_blank" rel="noopener"><span>Beli via {label}</span><span>{pr}</span></a>'
         out.append(mp('Shopee', SHOPEE, shpN, shpS, d.get('su') and f"https://shopee.co.id/product/503293604/{d['su']}"))
         out.append(mp('Tokopedia', TOKO, tokN, tokS, d.get('tu') and f"https://www.tokopedia.com/klikbrik/{d['tu']}"))
-        if not (d.get('su') and d.get('tu')):
-            out.append(f'<p class="note">Di Shopee / Tokopedia, cari nomor set <b>{d["n"]}</b> di toko kami.</p>')
         if cp and cp.get('mkt') == 'none':
             out.append('<p class="note">Harga promo hanya untuk order Direct via WhatsApp.</p>')
     else:
