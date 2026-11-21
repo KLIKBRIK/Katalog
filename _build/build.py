@@ -77,6 +77,13 @@ if os.path.exists(_ov) and not A.keep_prices:
                         shp=it.get('shp'), tok=it.get('tok'), dm=it['dm'], ref=n(r[7]), st=it.get('st', r[9].strip()),
                         rs=1 if r[12].strip()=='Ready stock' else 0))
         have.add(sn)
+# Fixed DM / website prices Prima set herself ("price" in catalogue_overrides.json), applied on every build until removed.
+if os.path.exists(_ov):
+    for sn, it in json.load(open(_ov)).get('price', {}).items():
+        for o in out:
+            if o['n'] == sn and not o.get('x'):
+                for f in ('dm', 'shp', 'tok'):
+                    if f in it: o[f] = it[f]
 # Direct links to each set's own Shopee / Tokopedia listing (_build/marketplace_links.json).
 _ml = os.path.join(B, 'marketplace_links.json')
 if os.path.exists(_ml) and not A.keep_prices:

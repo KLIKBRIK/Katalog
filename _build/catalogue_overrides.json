@@ -506,5 +506,15 @@
    "tok": 2685000,
    "dm": 2350000
   }
+ },
+ "price": {
+  "11388": {
+   "note": "Venetian Neighbourhood: website/DM price set by Prima 21 Nov 2026 (sheet said Rp10,369,000)",
+   "dm": 10799000
+  },
+  "21330": {
+   "note": "Home Alone: website/DM price set by Prima 21 Nov 2026",
+   "dm": 8729000
+  }
  }
 }

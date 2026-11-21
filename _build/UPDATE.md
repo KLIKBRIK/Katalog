@@ -33,3 +33,7 @@ Refresh it (needs Prima's browser, signed in to Shopee Seller Centre) whenever l
 Set pages: build.py also writes one landing page per set at set/<no>/ (photo, price, buy buttons, specifications) via _build/set_pages.py, from the same data as the catalogue page. Specs (pieces, minifigs, age, year, box size, weight) come from _marketplace/specs.csv, filled by the "Marketplace assets" GitHub Action from Brickset. build.py appends any new site set to _marketplace/sets.txt; commit that too so the Action fetches its photo + specs (the pages show the specs from the next build on).
 
 Visitor stats: GoatCounter (https://klikbrik.goatcounter.com, Prima's account, added 15 Nov 2026). The count.js line sits before </body> in template.html and set_pages.py.
+
+Fixed prices: `_build/catalogue_overrides.json` "price" pins a set's website/DM price (and optionally "shp"/"tok") on every build,
+whatever the sheet says, e.g. 11388 Venetian Neighbourhood Rp10,799,000 and 21330 Home Alone Rp8,729,000 (Prima, 21 Nov 2026).
+Remove an entry to let the sheet decide again.
