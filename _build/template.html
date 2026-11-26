@@ -108,6 +108,30 @@ a.name:hover{color:var(--orange-deep)}
 .tab[aria-selected=true]{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.08)}
 #tab-promo[aria-selected=true]{background:linear-gradient(90deg,#e0115f,#ff6000);color:#fff}
 .promo-bar{cursor:pointer}
+.tag.gift{background:#127a46;color:#fff;font-size:12px}
+.giftnote{background:#e6f4ec;color:#0d5c35;border-radius:8px;padding:7px 9px;font-size:13px;font-weight:700;line-height:1.3}
+.giftnote small{display:block;font-weight:500;font-size:12px}
+.paketlink{display:block;background:#fff0f5;color:#b00d4b;border-radius:8px;padding:7px 9px;font-size:12px;font-weight:700;text-decoration:none;line-height:1.3}
+.paket{padding:18px 0 4px}
+.paket h2{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-size:24px;margin-bottom:4px}
+.paket>p{color:var(--muted);font-size:14px;margin-bottom:12px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.pcard{background:var(--card);border:2px solid #e0115f;border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
+.pcard .pics{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;background:#fff;padding:10px;gap:6px}
+.pcard .pics img{width:100%;aspect-ratio:1;object-fit:contain}
+.pcard .plus{font-weight:800;font-size:22px;color:#e0115f}
+.pcard .gfree{position:relative}
+.pcard .gfree b{position:absolute;top:0;right:0;background:#127a46;color:#fff;font-size:11px;padding:3px 7px;border-radius:999px}
+.pcard .body{padding:12px;display:flex;flex-direction:column;gap:8px;flex:1}
+.pcard .pname{font-weight:700;font-size:15px;line-height:1.3}
+.pcard .pname span{color:#127a46}
+.pcard .chs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:12px;text-align:center}
+.pcard .chs div{background:#f4f1ec;border-radius:8px;padding:6px 4px}
+.pcard .chs b{display:block;font-size:13px}
+.pcard .chs div:first-child{background:#fff3ec}
+.pcard .chs div:first-child b{color:var(--orange-deep);font-size:15px}
+.pcard small{font-size:11px;color:var(--muted);line-height:1.3}
+.giftbtn{margin-top:12px}
 .pbgo{display:inline-block;margin-top:6px;background:#fff;color:#e0115f;font-size:13px;padding:5px 12px;border-radius:999px}
 .stk{display:inline-block;align-self:flex-start;font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px}
 .stk.rs{background:#e6f4ec;color:#127a46}
@@ -185,6 +209,7 @@ footer p+p{margin-top:6px}
 </div>
 
 <main class="wrap">
+  <section class="paket" id="paket" hidden></section>
   <div class="grid" id="grid"></div>
   <div class="empty" id="empty" hidden>Set yang kamu cari belum ada di katalog. <a href="#" id="askwa">Tanya kami di WhatsApp</a>, siapa tahu bisa kami carikan.</div>
   <button class="more" id="more" hidden>Tampilkan lebih banyak</button>
@@ -273,7 +298,9 @@ const SPECIAL = [
 const themeCounts = {}; DATA.forEach(d=>themeCounts[d.theme]=(themeCounts[d.theme]||0)+1);
 const THEMES = Object.keys(themeCounts).sort((a,b)=>themeCounts[b]-themeCounts[a]);
 
-const state = {q:"", budget:"all", theme:null, special:CAMP?"camp":null, sort:"rec", shown:48};
+const state = {q:"", budget:"all", theme:null, special:CAMP?"camp":null, sort:"rec", shown:48, gift:false};
+const BUNDLES = CAMP && CAMP.bundles ? CAMP.bundles : [];
+const byNo = {}; DATA.forEach(d=>byNo[d.n]=d);
 const $ = id => document.getElementById(id);
 
 function chip(label, pressed, onClick, hot){
@@ -310,14 +337,15 @@ function shareTheme(){
 }
 window.addEventListener("popstate", ()=>{ applyTheme(themeFromUrl()); drawChips(); render(); });
 applyTheme(themeFromUrl());
+function cpPct(d){ const c=d.cp; if (c.gift) { const g=byNo[c.giftNo]; return g ? g.dm/c.dmN : 0; } return (c.dmN-c.dmS)/c.dmN; }
 function filtered(){
   const q=state.q.trim().toLowerCase();
   const bf=BUDGETS.find(b=>b.k===state.budget).f;
   const sf=state.special?SPECIAL.find(s=>s.k===state.special).f:()=>true;
-  let list=DATA.filter(d=>(!q||q.split(/\s+/).every(w=>d.hay.includes(w))) && bf(d) && sf(d) && (!state.theme||d.theme===state.theme));
+  let list=DATA.filter(d=>(!state.gift||(d.cp&&d.cp.gift)) && (!q||q.split(/\s+/).every(w=>d.hay.includes(w))) && bf(d) && sf(d) && (!state.theme||d.theme===state.theme));
   const s=state.sort;
   const by = {
-    rec:(a,b)=>((!!b.cp)-(!!a.cp))||(b.cp&&a.cp?(b.cp.dmN-b.cp.dmS)/b.cp.dmN-(a.cp.dmN-a.cp.dmS)/a.cp.dmN:0)||(b.rs-a.rs)||(PHOTOS.has(b.n)-PHOTOS.has(a.n))||(b.pct-a.pct)||(a.dm-b.dm),
+    rec:(a,b)=>((!!b.cp)-(!!a.cp))||(b.cp&&a.cp?cpPct(b)-cpPct(a):0)||(b.rs-a.rs)||(PHOTOS.has(b.n)-PHOTOS.has(a.n))||(b.pct-a.pct)||(a.dm-b.dm),
     low:(a,b)=>a.dmNow-b.dmNow, high:(a,b)=>b.dmNow-a.dmNow,
     save:(a,b)=>(b.cp?b.cp.dmN-b.cp.dmS:b.saving)-(a.cp?a.cp.dmN-a.cp.dmS:a.saving), num:(a,b)=>a.n.localeCompare(b.n,undefined,{numeric:true})
   }[s];
@@ -326,19 +354,27 @@ function filtered(){
 
 function card(d){
   const cp = d.cp;
-  const tag = cp ? `<span class="tag promo">${esc(CAMP.name)} −${esc(cp.disc)}</span>`
+  const tag = cp && cp.gift ? `<span class="tag gift">${esc(CAMP.name)} · 🎁 Gratis set</span>`
+            : cp ? `<span class="tag promo">${esc(CAMP.name)} −${esc(cp.disc)}</span>`
             : d.st==="Retiring soon" ? '<span class="tag ret">Segera retired</span>'
             : d.st==="Retired" ? '<span class="tag ret">Retired</span>'
             : d.st==="Pre-order" ? '<span class="tag pre">Segera rilis</span>' : '';
   let price;
-  if (cp) {
+  const gd = cp && cp.gift ? byNo[cp.giftNo] : null;
+  if (cp && cp.gift) {
+    price = `<div class="lbl promo">Promo ${esc(CAMP.name)}</div><div class="now">${rp(cp.dmN)}</div><div class="giftnote">🎁 + GRATIS ${esc(cp.gift)}${gd?`<small>No. set ${gd.n} · senilai ${rp(gd.dm)}</small>`:''}</div>`;
+  } else if (cp) {
     price = `<div><span class="lbl">Harga normal</span> <span class="old">${rp(cp.dmN)}</span></div><div class="lbl promo">Harga Promo ${esc(CAMP.name)}</div><div class="now">${rp(cp.dmS)}</div><span class="save">Hemat ${rp(cp.dmN-cp.dmS)}</span>`;
   } else {
     const ref = d.showRef ? `<div><span class="lbl">${REF_LABEL}</span> <span class="old">${rp(d.ref)}</span></div>` : '';
     const save = d.showRef ? `<span class="save">Hemat ${rp(d.saving)}</span>` : '';
     price = `${ref}<div class="lbl">Harga Spesial KlikBrik</div><div class="now">${rp(d.dm)}</div>${save}`;
   }
-  const msg = cp
+  const bl = BUNDLES.filter(b=>b.main===d.n);
+  if (bl.length) price += bl.map(b=>`<a class="paketlink" href="#paket" data-paket>🎁 Ada Paket Bonus: + ${esc(b.giftName)} GRATIS, ${rp(b.dm)} →</a>`).join("");
+  const msg = cp && cp.gift
+    ? `Halo KlikBrik! Saya mau order PROMO ${CAMP.name} (Gratis Set):\n${d.n} ${d.name}\nHarga: ${rp(cp.dmN)} + GRATIS ${cp.gift}\n${d.rs?'Ready stock':'Pre-order'}\nApakah masih bisa?`
+    : cp
     ? `Halo KlikBrik! Saya mau order PROMO ${CAMP.name}:\n${d.n} ${d.name}\nHarga promo: ${rp(cp.dmS)} (normal ${rp(cp.dmN)})\n${d.rs?'Ready stock':'Pre-order'}\nApakah masih bisa?`
     : `Halo KlikBrik! Saya mau order:\n${d.n} ${d.name}\nHarga Spesial KlikBrik: ${rp(d.dm)}\n${d.rs?'Ready stock':'Pre-order'}\nApakah masih bisa?`;
   const mp = (label, url, normal, sale, direct) => normal||sale ? `<a href="${direct||url}" target="_blank" rel="noopener"${direct?'':` data-copy="${d.n}"`}><span>${label}</span><span>${sale?`<s>${rp(normal)}</s> ${rp(sale)}`:rp(normal)}</span></a>` : '';
@@ -352,7 +388,7 @@ function card(d){
       <div class="safe-box">
         ${mp('Shopee', SHOPEE, shpN, shpS, d.su && SHP_ITEM(d.su))}
         ${mp('Tokopedia', TOKO, tokN, tokS, d.tu && TOK_ITEM(d.tu))}
-        <small>Klik untuk langsung membuka halaman set ini di toko kami.${cp&&cp.mkt==="none"?' Promo hanya berlaku untuk order Direct.':''}</small>
+        <small>Klik untuk langsung membuka halaman set ini di toko kami.${cp&&cp.mkt==="none"?' Promo hanya berlaku untuk order Direct.':''}${cp&&cp.gift?' Bonus gratis juga berlaku di Shopee / Tokopedia.':''}</small>
       </div>`;
   } else {
     safe = `<div class="dmnote">Set ini khusus order Direct${cp?' (promo berlaku via WA)':''}.</div>`;
@@ -374,7 +410,34 @@ function card(d){
   </article>`;
 }
 
+function pimg(n){ return PHOTOS.has(n) ? `img/${n}.jpg` : `mp/${n}.jpg`; }
+const PFB = `onerror="this.onerror=null;this.src='https://cdn.rebrickable.com/media/sets/'+this.dataset.n+'-1.jpg'"`;
+function paketCard(b){
+  const m = byNo[b.main]||{}, g = byNo[b.gift]||{};
+  const msg = `Halo KlikBrik! Saya mau order PAKET BONUS ${CAMP.name}:\n${b.main} ${b.mainName} + GRATIS ${b.gift} ${b.giftName}\nHarga paket: ${rp(b.dm)}\nApakah masih bisa?`;
+  const worth = (m.dm||0)+(g.dm||0);
+  return `<article class="pcard">
+    <div class="pics"><a href="set/${b.main}/"><img loading="lazy" data-n="${b.main}" ${PFB} src="${pimg(b.main)}" alt="${esc(b.mainName)}"></a><span class="plus">+</span><a class="gfree" href="set/${b.gift}/"><img loading="lazy" data-n="${b.gift}" ${PFB} src="${pimg(b.gift)}" alt="${esc(b.giftName)}"><b>GRATIS</b></a></div>
+    <div class="body">
+      <div class="pname">${esc(b.mainName)} <span>+ GRATIS ${esc(b.giftName)}</span></div>
+      <div class="setno">No. set ${b.main} + ${b.gift}${worth>b.dm?` · nilai normal ${rp(worth)}`:''}</div>
+      <div class="chs"><div>Direct (WA)<b>${rp(b.dm)}</b></div><div>Shopee<b>${rp(b.shp)}</b></div><div>Tokopedia<b>${rp(b.tok)}</b></div></div>
+      <a class="btn wa" href="${waLink(msg)}" target="_blank" rel="noopener">Order Paket via WA</a>
+      <small>Di Shopee / Tokopedia: cari "Paket ${esc(b.mainName)}" di toko KlikBrik!. ${esc(b.mainName)} tanpa bonus tetap bisa dibeli dengan harga promo.</small>
+    </div>
+  </article>`;
+}
+function renderPaket(){
+  const el = $("paket"); if (!el) return;
+  const nGift = DATA.filter(d=>d.cp&&d.cp.gift).length;
+  const show = CAMP && state.special==="camp" && !state.q.trim() && !state.theme && state.budget==="all" && (BUNDLES.length || nGift);
+  el.hidden = !show; if (!show) return;
+  el.innerHTML = (BUNDLES.length ? `<h2>🎁 Paket Bonus ${esc(CAMP.name)}</h2><p>Beli set utama dengan harga paket, dapat set kecil GRATIS. Berlaku sampai ${new Date(CAMP.end+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"long"})} 23.59 WIB.</p><div class="pgrid">${BUNDLES.map(paketCard).join("")}</div>` : '')
+    + (nGift ? `<button class="chip hot giftbtn" id="giftonly" aria-pressed="${state.gift}">🎁 ${state.gift?'Tampilkan semua promo':nGift+' set dengan bonus GRATIS set'}</button>` : '');
+  const gb = $("giftonly"); if (gb) gb.onclick = () => { state.gift=!state.gift; state.shown=48; render(); };
+}
 function render(){
+  renderPaket();
   const list=filtered();
   $("count").textContent = list.length + " set ditemukan";
   $("grid").innerHTML = list.slice(0,state.shown).map(card).join("");
@@ -386,6 +449,8 @@ let toastT;
 function toast(t){ const el=$("toast"); el.textContent=t; el.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove("show"),2600); }
 
 $("grid").addEventListener("click", e=>{
+  const pk=e.target.closest("[data-paket]");
+  if(pk){ e.preventDefault(); state.gift=false; state.q=""; $("q").value=""; if (state.special!=="camp") setTab(true,false); else render(); $("paket").scrollIntoView({behavior:"smooth"}); return; }
   const s=e.target.closest("[data-safe]");
   if(s){ s.nextElementSibling.classList.toggle("open"); return; }
   const c=e.target.closest("[data-copy]");
@@ -397,14 +462,15 @@ $("more").addEventListener("click", ()=>{state.shown+=48;render();});
 $("fab").href = waLink("Halo KlikBrik! Saya mau tanya soal set LEGO.");
 $("askwa").href = waLink("Halo KlikBrik! Saya cari set ini, ada nggak ya? ");
 if (CAMP) {
-  const n = DATA.filter(d=>d.cp).length;
-  const maxd = Math.max(...DATA.filter(d=>d.cp).map(d=>Math.round((1-d.cp.dmS/d.cp.dmN)*100)));
+  const n = DATA.filter(d=>d.cp&&!d.cp.gift).length, ng = DATA.filter(d=>d.cp&&d.cp.gift).length;
+  const maxd = Math.max(...DATA.filter(d=>d.cp&&!d.cp.gift).map(d=>Math.round((1-d.cp.dmS/d.cp.dmN)*100)));
   const pb = $("promobar"); pb.hidden = false;
   const endTxt = CAMP.start===CAMP.end ? "hari ini saja, sampai 23.59 WIB" : "sampai " + new Date(CAMP.end+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"long"}) + " 23.59 WIB";
-  pb.innerHTML = `🔥 PROMO ${esc(CAMP.name)}: diskon s.d ${maxd}% untuk ${n} set<small>${endTxt} · bayar selama promo = harga terkunci</small>`;
+  pb.innerHTML = `🔥 PROMO ${esc(CAMP.name)}: diskon s.d ${maxd}% untuk ${n} set${ng?` + ${ng} set dapat GRATIS set`:''}${BUNDLES.length?` + ${BUNDLES.length} Paket Bonus`:''}<small>${endTxt} · bayar selama promo = harga terkunci</small>`;
 }
 function setTab(promo, push){
   state.special = promo ? "camp" : (state.special==="camp" ? null : state.special);
+  if (!promo) state.gift = false;
   state.shown = 48;
   $("tab-promo").setAttribute("aria-selected", promo?"true":"false");
   $("tab-all").setAttribute("aria-selected", promo?"false":"true");

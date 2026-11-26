@@ -110,9 +110,23 @@ def price_html(d, cp, camp):
     if not cp:
         return f'<div class="pricebox">{normal}</div>'
     end = camp['end']
-    promo = (f'<div><span class="lbl">Harga normal</span> <span class="old">{rp(cp["dmN"])}</span></div>'
+    if cp.get('gift'):  # Gratis Set: normal price + free bonus set
+        promo = (f'<div class="lbl promo">Promo {E(camp["name"])}</div><div class="now">{rp(cp["dmN"])}</div>'
+                 f'<div style="background:#e6f4ec;color:#0d5c35;border-radius:8px;padding:8px 10px;font-weight:700;margin:6px 0">'
+                 f'🎁 + GRATIS <a href="../{cp["giftNo"]}/" style="color:inherit">{E(cp["gift"])}</a> (No. set {cp["giftNo"]})</div>'
+                 f'<div class="ends">Promo sampai {fmt_date(end)} 23.59 WIB</div>')
+    else:
+      promo = (f'<div><span class="lbl">Harga normal</span> <span class="old">{rp(cp["dmN"])}</span></div>'
              f'<div class="lbl promo">Harga Promo {E(camp["name"])}</div><div class="now">{rp(cp["dmS"])}</div>'
              f'<span class="save">Hemat {rp(cp["dmN"] - cp["dmS"])}</span><div class="ends">Promo sampai {fmt_date(end)} 23.59 WIB</div>')
+    for b in camp.get('bundles', []):
+        if b['main'] != d['n']: continue
+        msg = f"Halo KlikBrik! Saya mau order PAKET BONUS {camp['name']}:\n{b['main']} {b['mainName']} + GRATIS {b['gift']} {b['giftName']}\nHarga paket: {rp(b['dm'])}\nApakah masih bisa?"
+        promo += (f'<div style="border:2px solid #e0115f;border-radius:10px;padding:10px 12px;margin-top:10px">'
+                  f'<div style="font-weight:800;color:#b00d4b">🎁 Paket Bonus {E(camp["name"])}</div>'
+                  f'<div style="font-weight:700;margin:2px 0 6px">{E(b["mainName"])} + GRATIS <a href="../{b["gift"]}/">{E(b["giftName"])}</a></div>'
+                  f'<div style="font-size:14px">Direct (WA) <b>{rp(b["dm"])}</b> · Shopee {rp(b["shp"])} · Tokopedia {rp(b["tok"])}</div>'
+                  f'<a href="{E(wa(msg))}" target="_blank" rel="noopener" style="display:inline-block;margin-top:8px;background:#e0115f;color:#fff;font-weight:700;padding:8px 14px;border-radius:8px;text-decoration:none">Order Paket via WhatsApp</a></div>')
     return (f'<div class="pricebox" data-promo-end="{end}"><div class="p-promo">{promo}</div>'
             f'<div class="p-normal" hidden>{normal}</div></div>')
 
@@ -124,7 +138,9 @@ def fmt_date(iso):
 
 
 def buttons(d, cp, camp):
-    if cp:
+    if cp and cp.get('gift'):
+        msg = f"Halo KlikBrik! Saya mau order PROMO {camp['name']} (Gratis Set):\n{d['n']} {d['name']}\nHarga: {rp(cp['dmN'])} + GRATIS {cp['gift']}\n{'Ready stock' if d.get('rs') else 'Pre-order'}\nApakah masih bisa?"
+    elif cp:
         msg = f"Halo KlikBrik! Saya mau order PROMO {camp['name']}:\n{d['n']} {d['name']}\nHarga promo: {rp(cp['dmS'])} (normal {rp(cp['dmN'])})\n{'Ready stock' if d.get('rs') else 'Pre-order'}\nApakah masih bisa?"
     else:
         msg = f"Halo KlikBrik! Saya mau order:\n{d['n']} {d['name']}\nHarga Spesial KlikBrik: {rp(d['dm'])}\n{'Ready stock' if d.get('rs') else 'Pre-order'}\nApakah masih bisa?"
@@ -172,7 +188,8 @@ def page(d, all_sets, camp, photos, mp, specs, updated):
     cp = camp['items'].get(n) if camp else None
     st = d.get('st', '')
     tags = [f'<a class="tag theme" href="../../?tema={slug(theme)}">{E(theme)}</a>']
-    if cp: tags.append(f'<span class="tag promo" data-promo>{E(camp["name"])} −{E(cp["disc"])}</span>')
+    if cp and cp.get('gift'): tags.append(f'<span class="tag promo" data-promo style="background:#127a46">{E(camp["name"])} · 🎁 Gratis set</span>')
+    elif cp: tags.append(f'<span class="tag promo" data-promo>{E(camp["name"])} −{E(cp["disc"])}</span>')
     if st == 'Retiring soon': tags.append('<span class="tag ret">Segera retired</span>')
     elif st == 'Retired': tags.append('<span class="tag ret">Retired</span>')
     elif st == 'Pre-order': tags.append('<span class="tag pre">Segera rilis</span>')

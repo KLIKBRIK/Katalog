@@ -41,3 +41,11 @@ Remove an entry to let the sheet decide again.
 Campaign tab prices (Prima, 26 Nov 2026): `_build/campaign_prices.json` holds a campaign's own per-set sale prices
 (DM, Shopee AND Tokopedia, e.g. from the 'Black Friday 2026' tab). While that campaign runs they replace the Campaign
 Guide's prices; normal Shopee/Tokopedia prices stay the published site prices. Only public prices go in it (never cost/margin).
+
+Gratis Set + Paket Bonus (Prima, 27 Nov 2026): the team sheet 'KlikBrik Team Penjualan' (id 1RoQGPgZ-MRu2rzMXGFk28MqXrr1RhbRHtbWQOYihPvw)
+is the source for Black Friday: tab 'Black Friday 2026' (144 sets; "GRATIS SET" rows are sold at the NORMAL price + a free
+bonus set, NOT discounted) and tab 'Bundling BF 2026' (Gratis Set bonus per set + 12 "Paket Bonus" bundles). Rebuild
+campaign_prices.json from them with:
+  python3 _build/campaign_tab.py "Black Friday" <bf_tab.json> <bundling_tab.json> <catalogue.json>
+The promo tab then shows a "Paket Bonus" section above the grid, Gratis Set cards (green tag, normal price + bonus) and a
+bundle box on the main set's page - all only while the campaign runs.

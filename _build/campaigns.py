@@ -66,8 +66,13 @@ def active(guide_path, salelist_path=None, today=None):
         for sn, it in cp.get(name, {}).items():
             g = c['items'].get(sn, {})
             new = dict(disc=it['disc'], dmN=it['dmN'], dmS=it['dmS'], mkt=it['mkt'])
-            if it['mkt'] != 'none':
+            if it.get('gift'):  # Gratis Set: NORMAL price (no BF discount) + a free bonus set
+                new.update(gift=it['gift'], giftNo=it['giftNo'], shpN=it.get('shpN'), shpS=None, tokN=it.get('tokN'), tokS=None)
+            elif it['mkt'] != 'none':
                 new['shpN'], new['shpS'] = None, it.get('shpS')  # normal = published site price
                 new['tokN'], new['tokS'] = None, it.get('tokS')
             c['items'][sn] = new
+        # Paket Bonus bundles (main set + free bonus set, one price per channel)
+        bl = cp.get('_bundles', {}).get(name)
+        if bl: c['bundles'] = bl
     return list(camps.values())
