@@ -56,4 +56,18 @@ def active(guide_path, salelist_path=None, today=None):
                 it['tokN'], it['tokS'] = (tn, ts) if ts else (n(r[6]), n(r[7]))
         c = camps.setdefault(name, dict(name=name, start=s.isoformat(), end=e.isoformat(), items={}))
         c['items'][setno] = it
+    # Per-set sale prices Prima gave in a campaign's own tab (_build/campaign_prices.json, e.g. 'Black Friday 2026' tab:
+    # DM, Shopee AND Tokopedia sale prices). They replace the Campaign Guide's prices for that campaign while it runs;
+    # Shopee/Tokopedia normal prices = the set's published site price.
+    import os
+    pp = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'campaign_prices.json')
+    cp = json.load(open(pp)) if os.path.exists(pp) else {}
+    for name, c in camps.items():
+        for sn, it in cp.get(name, {}).items():
+            g = c['items'].get(sn, {})
+            new = dict(disc=it['disc'], dmN=it['dmN'], dmS=it['dmS'], mkt=it['mkt'])
+            if it['mkt'] != 'none':
+                new['shpN'], new['shpS'] = None, it.get('shpS')  # normal = published site price
+                new['tokN'], new['tokS'] = None, it.get('tokS')
+            c['items'][sn] = new
     return list(camps.values())

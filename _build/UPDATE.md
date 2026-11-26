@@ -37,3 +37,7 @@ Visitor stats: GoatCounter (https://klikbrik.goatcounter.com, Prima's account, a
 Fixed prices: `_build/catalogue_overrides.json` "price" pins a set's website/DM price (and optionally "shp"/"tok") on every build,
 whatever the sheet says, e.g. 11388 Venetian Neighbourhood Rp10,799,000 and 21330 Home Alone Rp8,729,000 (Prima, 21 Nov 2026).
 Remove an entry to let the sheet decide again.
+
+Campaign tab prices (Prima, 26 Nov 2026): `_build/campaign_prices.json` holds a campaign's own per-set sale prices
+(DM, Shopee AND Tokopedia, e.g. from the 'Black Friday 2026' tab). While that campaign runs they replace the Campaign
+Guide's prices; normal Shopee/Tokopedia prices stay the published site prices. Only public prices go in it (never cost/margin).
