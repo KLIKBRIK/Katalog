@@ -84,6 +84,21 @@ if os.path.exists(_ov):
             if o['n'] == sn and not o.get('x'):
                 for f in ('dm', 'shp', 'tok'):
                     if f in it: o[f] = it[f]
+# Retired & Eksklusif page (Prima, 27 Nov 2026): flag the sets listed in catalogue_overrides.json "exclusive" (both modes);
+# entries with their own "dm" are added to the site even when the sheet leaves them out (e.g. 76417 Gringotts).
+if os.path.exists(_ov):
+    have = {o['n']: o for o in out}
+    for sn, it in json.load(open(_ov)).get('exclusive', {}).items():
+        if sn.startswith('_'): continue
+        if sn not in have and it.get('dm') and sn in allrows:
+            r = allrows[sn]; th = r[2].strip()
+            o = dict(n=sn, name=r[1].strip(), theme='Ideas' if th.lower()=='ideas' else th, ch=it.get('ch', 'dm'),
+                     shp=None, tok=None, dm=it['dm'], ref=n(r[7]), st=it.get('st', r[9].strip()),
+                     rs=1 if r[12].strip()=='Ready stock' else 0)
+            out.append(o); have[sn] = o
+        if sn in have:
+            have[sn]['ex'] = 1
+            if it.get('dm'): have[sn]['dm'] = it['dm']
 # Direct links to each set's own Shopee / Tokopedia listing (_build/marketplace_links.json).
 _ml = os.path.join(B, 'marketplace_links.json')
 if os.path.exists(_ml) and not A.keep_prices:

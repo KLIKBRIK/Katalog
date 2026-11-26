@@ -49,3 +49,9 @@ campaign_prices.json from them with:
   python3 _build/campaign_tab.py "Black Friday" <bf_tab.json> <bundling_tab.json> <catalogue.json>
 The promo tab then shows a "Paket Bonus" section above the grid, Gratis Set cards (green tag, normal price + bonus) and a
 bundle box on the main set's page - all only while the campaign runs.
+
+Hero slider + views (Prima, 27 Nov 2026): a 5-slide banner under the header (Black Friday sale, Bundling, whole catalogue,
+Segera retired, Retired & Eksklusif; campaign slides only while a campaign runs). Each slide opens a view with its own link:
+#promo, #bundling, #semua, #segera-retired, #eksklusif. Searching always searches ALL sets (switches to #semua).
+Retired & Eksklusif = `_build/catalogue_overrides.json` "exclusive" (Prima's list: 76417 Gringotts Rp18.500.000 DM only,
+76294, 76269, 10307, 76178, 76218, 76215, 42143). An entry with its own "dm" is added even if the sheet leaves it out.

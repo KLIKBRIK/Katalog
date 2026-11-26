@@ -106,6 +106,7 @@ a.name:hover{color:var(--orange-deep)}
 .tabs{display:flex;gap:6px;margin-bottom:10px;background:#efe9e0;padding:4px;border-radius:14px}
 .tab{flex:1;padding:11px 8px;border-radius:11px;font-weight:700;font-size:15px;color:#6b6f76}
 .tab[aria-selected=true]{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+#tab-ex[aria-selected=true]{background:linear-gradient(90deg,#2d2350,#8a6d1f);color:#fff}
 #tab-promo[aria-selected=true]{background:linear-gradient(90deg,#e0115f,#ff6000);color:#fff}
 .promo-bar{cursor:pointer}
 .tag.gift{background:#127a46;color:#fff;font-size:12px}
@@ -131,6 +132,39 @@ a.name:hover{color:var(--orange-deep)}
 .pcard .chs div:first-child{background:#fff3ec}
 .pcard .chs div:first-child b{color:var(--orange-deep);font-size:15px}
 .pcard small{font-size:11px;color:var(--muted);line-height:1.3}
+/* hero slider */
+.hs{position:relative;margin:22px 0 4px;border-radius:22px;overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.18)}
+.hs-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;scroll-behavior:smooth}
+.hs-track::-webkit-scrollbar{display:none}
+.slide{flex:0 0 100%;scroll-snap-align:start;display:grid;grid-template-columns:1.05fr 1fr;align-items:center;gap:18px;padding:30px 40px 44px;min-height:280px;color:#fff;text-decoration:none;position:relative;overflow:hidden}
+.slide::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 20%,rgba(255,255,255,.16),transparent 45%);pointer-events:none}
+.slide .kick{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.1em;background:rgba(255,255,255,.18);padding:5px 11px;border-radius:999px;text-transform:uppercase}
+.slide h3{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-size:clamp(28px,4.2vw,46px);line-height:1.02;margin:12px 0 10px;letter-spacing:-.02em}
+.slide h3 em{font-style:normal;color:var(--hl,#ffd166)}
+.slide p{font-size:15px;opacity:.93;max-width:440px;line-height:1.45}
+.slide .cta{display:inline-flex;align-items:center;gap:6px;margin-top:16px;background:#fff;color:#1c1f24;font-weight:800;padding:11px 20px;border-radius:999px;font-size:15px}
+.slide .imgs{display:flex;justify-content:center;align-items:center;gap:10px;position:relative}
+.slide .imgs img{width:30%;aspect-ratio:1;object-fit:cover;border-radius:16px;background:#fff;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.slide .imgs img:nth-child(2){width:38%;z-index:1}
+.slide .imgs .pl{font-size:34px;font-weight:900;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.3)}
+.slide .badge{position:absolute;top:-6px;right:4%;z-index:2;background:#ffd166;color:#1c1f24;font-weight:900;font-size:14px;padding:8px 12px;border-radius:999px;transform:rotate(8deg);box-shadow:0 6px 16px rgba(0,0,0,.25)}
+.s-bf{background:linear-gradient(120deg,#0d0d10 0%,#2b0816 55%,#e0115f 135%)}
+.s-bundle{background:linear-gradient(120deg,#0b4d2d 0%,#127a46 55%,#e0115f 150%);--hl:#ffd166}
+.s-all{background:linear-gradient(120deg,#ff6000 0%,#d9480f 100%);--hl:#1c1f24}
+.s-soon{background:linear-gradient(120deg,#3b1212 0%,#8f1d1d 60%,#ff6000 150%)}
+.s-ex{background:linear-gradient(120deg,#0f1526 0%,#2d2350 60%,#8a6d1f 140%);--hl:#f5c542}
+.s-ex .cta{background:#f5c542}
+.hs-dots{position:absolute;left:0;right:0;bottom:14px;display:flex;justify-content:center;gap:7px}
+.hs-dots button{width:9px;height:9px;border-radius:999px;background:rgba(255,255,255,.45);transition:.25s}
+.hs-dots button[aria-current=true]{width:26px;background:#fff}
+.hs-nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:999px;background:rgba(255,255,255,.9);color:#1c1f24;font-size:20px;font-weight:800;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.hs-nav.prev{left:12px}.hs-nav.next{right:12px}
+@media(max-width:700px){.slide{grid-template-columns:1fr;padding:22px 20px 40px;min-height:0;gap:14px}.slide .imgs{order:-1}.slide .imgs img{width:28%}.slide .imgs img:nth-child(2){width:34%}.slide p{font-size:14px}.hs-nav{display:none}.hs{margin-top:16px;border-radius:18px}}
+.vhead{border-radius:18px;padding:20px 22px;margin:16px 0 4px;color:#fff}
+.vhead h2{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-size:26px;margin-bottom:4px}
+.vhead p{font-size:14px;opacity:.92;max-width:680px}
+.tag.ex{background:#f5c542;color:#1c1f24}
+@media(max-width:560px){.tab{font-size:12.5px;padding:9px 4px;line-height:1.25}}
 .psub{font-size:17px;font-weight:800;margin:16px 0 10px}
 .pcard .btn.safe{border:1.5px solid var(--ink);color:var(--ink);background:#fff}
 .pbgo{display:inline-block;margin-top:6px;background:#fff;color:#e0115f;font-size:13px;padding:5px 12px;border-radius:999px}
@@ -181,6 +215,7 @@ footer p+p{margin-top:6px}
 </header>
 
 <div class="wrap">
+  <div class="hs" id="hs" hidden></div>
   <div class="ways">
     <div class="way direct"><b>Order Direct, paling hemat</b><p>Chat kami di WhatsApp, bayar via QRIS atau transfer. Tanpa biaya marketplace, jadi harganya paling murah.</p></div>
     <div class="way"><b>Beli via Shopee / Tokopedia</b><p>Set yang sama di toko resmi KlikBrik! di Shopee &amp; Tokopedia. Pembayaran lewat sistem marketplace, dana diteruskan ke kami setelah paket kamu terima.</p></div>
@@ -192,9 +227,10 @@ footer p+p{margin-top:6px}
     <div class="tabs" id="tabs" hidden>
       <button class="tab" id="tab-promo"></button>
       <button class="tab" id="tab-all">Semua set</button>
+      <button class="tab" id="tab-ex">💎 Retired &amp; Eksklusif</button>
     </div>
     <div class="search">
-      <input id="q" type="search" placeholder="Cari nama atau nomor set… (mis. 75454, Titanic)" autocomplete="off">
+      <input id="q" type="search" placeholder="Cari di semua set… nama atau nomor (mis. 75454, Titanic)" autocomplete="off">
       <select id="sort" aria-label="Urutkan">
         <option value="rec">Rekomendasi</option>
         <option value="low">Harga termurah</option>
@@ -210,6 +246,7 @@ footer p+p{margin-top:6px}
 </div>
 
 <main class="wrap">
+  <section class="vhead" id="vhead" hidden></section>
   <section class="paket" id="paket" hidden></section>
   <div class="grid" id="grid"></div>
   <div class="empty" id="empty" hidden>Set yang kamu cari belum ada di katalog. <a href="#" id="askwa">Tanya kami di WhatsApp</a>, siapa tahu bisa kami carikan.</div>
@@ -293,7 +330,8 @@ const BUDGETS = [
 const SPECIAL = [
   {k:"camp",l:"",f:d=>!!d.cp,hidden:true},
   {k:"rs",l:"✓ Ready stock",f:d=>d.rs===1,hot:true},
-  {k:"ret",l:"🔥 Segera retired",f:d=>d.st==="Retiring soon"||d.st==="Retired",hot:true},
+  {k:"soon",l:"⏳ Segera retired",f:d=>d.st==="Retiring soon",hot:true},
+  {k:"ex",l:"",f:d=>!!d.ex,hidden:true},
   {k:"pre",l:"Segera rilis",f:d=>d.st==="Pre-order",hot:true},
 ];
 const themeCounts = {}; DATA.forEach(d=>themeCounts[d.theme]=(themeCounts[d.theme]||0)+1);
@@ -322,12 +360,12 @@ function drawChips(){
 const slug = t => t.toLowerCase().replace(/&/g,"and").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 const BASE_TITLE = document.title;
 function themeFromUrl(){ const v=new URLSearchParams(location.search).get("tema"); return v ? (THEMES.find(t=>slug(t)===slug(v))||null) : null; }
-function themeUrl(t){ const u=new URL(location.href); if (t) u.searchParams.set("tema", slug(t)); else u.searchParams.delete("tema"); if (t && u.hash==="#promo") u.hash="#semua"; return u.toString(); }
+function themeUrl(t){ const u=new URL(location.href); if (t) u.searchParams.set("tema", slug(t)); else u.searchParams.delete("tema"); if (t && u.hash && u.hash!=="#semua") u.hash="#semua"; return u.toString(); }
 function applyTheme(t){ state.theme=t; state.shown=48; document.title = t ? t+" · "+BASE_TITLE : BASE_TITLE; }
 function pickTheme(t){
   applyTheme(t);
   try { history.pushState(null, "", themeUrl(t)); } catch(_){}
-  if (t && CAMP && state.special==="camp") { setTab(false, false); return; }
+  if (t && (state.special==="camp" || state.special==="ex")) { go("semua", false); return; }
   drawChips(); render();
 }
 function shareTheme(){
@@ -357,6 +395,7 @@ function card(d){
   const cp = d.cp;
   const tag = cp && cp.gift ? `<span class="tag gift">${esc(CAMP.name)} · 🎁 Gratis set</span>`
             : cp ? `<span class="tag promo">${esc(CAMP.name)} −${esc(cp.disc)}</span>`
+            : d.ex ? '<span class="tag ex">💎 Retired &amp; Eksklusif</span>'
             : d.st==="Retiring soon" ? '<span class="tag ret">Segera retired</span>'
             : d.st==="Retired" ? '<span class="tag ret">Retired</span>'
             : d.st==="Pre-order" ? '<span class="tag pre">Segera rilis</span>' : '';
@@ -455,13 +494,13 @@ function toast(t){ const el=$("toast"); el.textContent=t; el.classList.add("show
 
 $("grid").addEventListener("click", e=>{
   const pk=e.target.closest("[data-paket]");
-  if(pk){ e.preventDefault(); state.gift=false; state.q=""; $("q").value=""; if (state.special!=="camp") setTab(true,false); else render(); $("paket").scrollIntoView({behavior:"smooth"}); return; }
+  if(pk){ e.preventDefault(); state.gift=false; state.q=""; $("q").value=""; if (state.special!=="camp") go("promo",false); else render(); $("paket").scrollIntoView({behavior:"smooth"}); return; }
   const s=e.target.closest("[data-safe]");
   if(s){ s.nextElementSibling.classList.toggle("open"); return; }
   const c=e.target.closest("[data-copy]");
   if(c){ const n=c.dataset.copy; try{ navigator.clipboard.writeText(n).then(()=>toast("Nomor set "+n+" disalin. Tempel di kolom cari toko kami."),()=>{}); }catch(_){} }
 });
-let qT; $("q").addEventListener("input", e=>{ clearTimeout(qT); qT=setTimeout(()=>{state.q=e.target.value;state.shown=48; if (CAMP && state.special==="camp" && state.q.trim()) setTab(false, true); else render();},120); });
+let qT; $("q").addEventListener("input", e=>{ clearTimeout(qT); qT=setTimeout(()=>{state.q=e.target.value;state.shown=48; if (state.q.trim() && (state.special==="camp" || state.special==="ex" || state.special==="soon")) go("semua", true); else render();},120); });
 $("sort").addEventListener("change", e=>{state.sort=e.target.value;render();});
 $("more").addEventListener("click", ()=>{state.shown+=48;render();});
 $("fab").href = waLink("Halo KlikBrik! Saya mau tanya soal set LEGO.");
@@ -473,25 +512,88 @@ if (CAMP) {
   const endTxt = CAMP.start===CAMP.end ? "hari ini saja, sampai 23.59 WIB" : "sampai " + new Date(CAMP.end+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"long"}) + " 23.59 WIB";
   pb.innerHTML = `🔥 PROMO ${esc(CAMP.name)}: diskon s.d ${maxd}% untuk ${n} set${ng?` + ${ng} set dapat GRATIS set`:''}${BUNDLES.length?` + ${BUNDLES.length} Paket Bonus`:''}<small>${endTxt} · bayar selama promo = harga terkunci</small>`;
 }
-function setTab(promo, push){
-  state.special = promo ? "camp" : (state.special==="camp" ? null : state.special);
-  if (!promo) state.gift = false;
-  state.shown = 48;
-  $("tab-promo").setAttribute("aria-selected", promo?"true":"false");
-  $("tab-all").setAttribute("aria-selected", promo?"false":"true");
-  if (push) { try { history.replaceState(null, "", promo ? "#promo" : "#semua"); } catch(_){} }
-  drawChips(); render();
+const VIEWS = ["promo","bundling","semua","segera-retired","eksklusif"];
+const EXN = DATA.filter(d=>d.ex).length, SOON = DATA.filter(d=>d.st==="Retiring soon").length;
+function vhead(v){
+  const el=$("vhead");
+  if (v==="eksklusif") { el.style.background="linear-gradient(120deg,#0f1526,#2d2350 60%,#8a6d1f 140%)"; el.innerHTML=`<h2>💎 Koleksi Retired &amp; Eksklusif</h2><p>Set langka yang sudah tidak diproduksi LEGO atau sulit dicari, stok sangat terbatas di KlikBrik!. Kondisi baru &amp; segel. Tanya ketersediaan lewat WhatsApp.</p>`; el.hidden=false; }
+  else if (v==="segera-retired") { el.style.background="linear-gradient(120deg,#3b1212,#8f1d1d 60%,#ff6000 150%)"; el.innerHTML=`<h2>⏳ Segera retired</h2><p>${SOON} set ini akan segera berhenti diproduksi LEGO. Setelah retired, harganya biasanya naik dan stok makin sulit dicari. Amankan sekarang.</p>`; el.hidden=false; }
+  else el.hidden=true;
 }
+function go(v, push, scroll){
+  if (!VIEWS.includes(v) || ((v==="promo"||v==="bundling") && !CAMP)) v="semua";
+  state.special = (v==="promo"||v==="bundling") ? "camp" : v==="eksklusif" ? "ex" : v==="segera-retired" ? "soon" : null;
+  if (state.special!=="camp") state.gift=false;
+  if (state.special) { if (state.theme) applyTheme(null); state.q=""; $("q").value=""; }
+  state.shown=48;
+  const tab = state.special==="camp" ? "tab-promo" : state.special==="ex" ? "tab-ex" : "tab-all";
+  ["tab-promo","tab-all","tab-ex"].forEach(id=>$(id).setAttribute("aria-selected", id===tab?"true":"false"));
+  if (push) { try { history.replaceState(null, "", location.pathname + (state.theme?location.search:"") + "#" + v); } catch(_){} }
+  vhead(v); drawChips(); render();
+  if (scroll) requestAnimationFrame(()=>{ const t = v==="bundling" ? $("paket") : document.querySelector(".controls"); if (t && !t.hidden) t.scrollIntoView({behavior:"smooth"}); });
+}
+// --- tabs
+$("tabs").hidden = false;
+if (CAMP) { $("tab-promo").textContent = "🔥 " + CAMP.name + " (" + DATA.filter(d=>d.cp).length + ")"; $("tab-promo").onclick = () => go("promo", true); }
+else $("tab-promo").hidden = true;
+$("tab-all").onclick = () => go("semua", true);
+$("tab-ex").textContent = "💎 Retired & Eksklusif"; $("tab-ex").onclick = () => go("eksklusif", true);
+if (!EXN) $("tab-ex").hidden = true;
 if (CAMP) {
-  $("tabs").hidden = false;
-  $("tab-promo").textContent = "🔥 Promo " + CAMP.name + " (" + DATA.filter(d=>d.cp).length + ")";
-  $("tab-promo").onclick = () => setTab(true, true);
-  $("tab-all").onclick = () => setTab(false, true);
   $("promobar").insertAdjacentHTML("beforeend", '<span class="pbgo">Lihat promo →</span>');
-  $("promobar").onclick = () => { setTab(true, true); document.querySelector(".controls").scrollIntoView({behavior:"smooth"}); };
-  window.addEventListener("hashchange", () => setTab(location.hash !== "#semua", false));
-  setTab(location.hash === "#promo" || (location.hash !== "#semua" && !state.theme), false);
-} else { drawChips(); render(); }
+  $("promobar").onclick = () => go("promo", true, true);
+}
+// --- hero slider
+function simg(n){ return `<img loading="lazy" data-n="${n}" ${PFB} src="${pimg(n)}" alt="">`; }
+function slides(){
+  const S=[], until = CAMP ? new Date(CAMP.end+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"long"}) : "";
+  if (CAMP) {
+    const disc = DATA.filter(d=>d.cp&&!d.cp.gift);
+    const maxd = Math.max(...disc.map(d=>Math.round((1-d.cp.dmS/d.cp.dmN)*100)));
+    const top = disc.filter(d=>d.dm>=1500000).sort((a,b)=>cpPct(b)-cpPct(a)).slice(0,3).map(d=>d.n);
+    S.push(`<a class="slide s-bf" href="#promo"><div><span class="kick">${esc(CAMP.name)} · s.d ${until}</span><h3>Diskon s.d <em>${maxd}%</em><br>untuk ${disc.length} set LEGO</h3><p>Harga promo terkunci begitu kamu bayar. 100% original &amp; segel, ready stock &amp; pre-order.</p><span class="cta">Lihat semua promo →</span></div><div class="imgs"><span class="badge">−${maxd}%</span>${top.map(simg).join("")}</div></a>`);
+    const nGS = DATA.filter(d=>d.cp&&d.cp.gift).length, nB = BUNDLES.length + nGS;
+    if (nB) {
+      const b = BUNDLES[0] || {main:"",gift:""};
+      S.push(`<a class="slide s-bundle" href="#bundling"><div><span class="kick">🎁 Bundling ${esc(CAMP.name)}</span><h3>Beli 1 set,<br>bawa pulang <em>2!</em></h3><p>${nB} bundling: ${BUNDLES.length} Paket Bonus dengan harga paket + ${nGS} set besar dapat GRATIS set kecil. Stok bonus terbatas.</p><span class="cta">Lihat semua bundling →</span></div><div class="imgs"><span class="badge">GRATIS</span>${b.main?simg(b.main)+'<span class="pl">+</span>'+simg(b.gift):''}</div></a>`);
+    }
+  }
+  const pop = ["10294","76269","10356"].filter(n=>byNo[n]);
+  S.push(`<a class="slide s-all" href="#semua"><div><span class="kick">Katalog lengkap</span><h3>${DATA.length}+ set LEGO original,<br><em>harga bersahabat</em></h3><p>Star Wars, Icons, Technic, Harry Potter, Marvel dan banyak lagi. Cari set impianmu, order lewat WhatsApp, Shopee atau Tokopedia.</p><span class="cta">Jelajahi katalog →</span></div><div class="imgs">${pop.map(simg).join("")}</div></a>`);
+  if (SOON) {
+    const soon = DATA.filter(d=>d.st==="Retiring soon" && d.dm>=3000000).sort((a,b)=>(PHOTOS.has(b.n)-PHOTOS.has(a.n))||b.dm-a.dm).slice(0,3).map(d=>d.n);
+    S.push(`<a class="slide s-soon" href="#segera-retired"><div><span class="kick">⏳ Segera retired</span><h3>${SOON} set akan<br><em>segera pensiun</em></h3><p>Setelah retired, harga biasanya naik dan stok makin langka. Amankan set favoritmu sekarang.</p><span class="cta">Lihat set segera retired →</span></div><div class="imgs">${soon.map(simg).join("")}</div></a>`);
+  }
+  if (EXN) {
+    const ex = ["76294","76417","76269"].filter(n=>byNo[n]);
+    S.push(`<a class="slide s-ex" href="#eksklusif"><div><span class="kick">💎 Koleksi langka</span><h3>Retired &amp; <em>Eksklusif</em></h3><p>Gringotts, X-Mansion, Avengers Tower, Eiffel Tower dan set langka lainnya. Sudah tidak diproduksi, stok sangat terbatas.</p><span class="cta">Lihat koleksi eksklusif →</span></div><div class="imgs">${ex.map(simg).join("")}</div></a>`);
+  }
+  return S;
+}
+(function(){
+  const S = slides(), hs = $("hs"); if (!S.length) return;
+  hs.innerHTML = `<div class="hs-track" id="hstrack">${S.join("")}</div><button class="hs-nav prev" aria-label="Sebelumnya">‹</button><button class="hs-nav next" aria-label="Berikutnya">›</button><div class="hs-dots">${S.map((_,i)=>`<button aria-label="Slide ${i+1}"></button>`).join("")}</div>`;
+  hs.hidden = false;
+  const tr=$("hstrack"), dots=[...hs.querySelectorAll(".hs-dots button")];
+  let i=0, paused=false;
+  const at = () => Math.round(tr.scrollLeft / tr.clientWidth);
+  const to = k => { i=(k+S.length)%S.length; tr.scrollTo({left:i*tr.clientWidth, behavior:"smooth"}); };
+  const mark = () => { i=at(); dots.forEach((d,k)=>d.setAttribute("aria-current", k===i?"true":"false")); };
+  tr.addEventListener("scroll", ()=>{ clearTimeout(tr._t); tr._t=setTimeout(mark,80); });
+  dots.forEach((d,k)=>d.onclick=()=>{ to(k); });
+  hs.querySelector(".prev").onclick=()=>to(i-1); hs.querySelector(".next").onclick=()=>to(i+1);
+  ["mouseenter","touchstart","focusin"].forEach(e=>hs.addEventListener(e,()=>paused=true,{passive:true}));
+  ["mouseleave","touchend"].forEach(e=>hs.addEventListener(e,()=>{ setTimeout(()=>paused=false, 4000); },{passive:true}));
+  mark(); setInterval(()=>{ if(!paused && !document.hidden) to(i+1); }, 5000);
+  window.addEventListener("resize", ()=>tr.scrollTo({left:i*tr.clientWidth}));
+  tr.addEventListener("click", e=>{ const a=e.target.closest("a.slide"); if(!a) return; e.preventDefault(); go(a.getAttribute("href").slice(1), true, true); });
+})();
+// --- initial view
+window.addEventListener("hashchange", () => go(location.hash.slice(1), false, true));
+{
+  const h = location.hash.slice(1);
+  go(VIEWS.includes(h) ? h : (CAMP && !state.theme ? "promo" : "semua"), false, h==="bundling");
+}
 if (state.theme) requestAnimationFrame(()=>document.querySelector(".controls").scrollIntoView());
 </script>
 <script data-goatcounter="https://klikbrik.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>

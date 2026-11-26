@@ -516,5 +516,21 @@
    "note": "Home Alone: website/DM price set by Prima 21 Nov 2026",
    "dm": 8729000
   }
+ },
+ "exclusive": {
+  "_note": "Retired & Eksklusif page (Prima, 27 Nov 2026). Listed sets get the 'ex' flag; an entry with dm/ch/st is added to the site even if the sheet leaves it out.",
+  "76417": {
+   "dm": 18500000,
+   "ch": "dm",
+   "st": "Retired",
+   "note": "Gringotts Collectors' Edition, Prima holds stock, price Rp18.500.000 (27 Nov 2026)"
+  },
+  "76294": {},
+  "76269": {},
+  "10307": {},
+  "76178": {},
+  "76218": {},
+  "76215": {},
+  "42143": {}
  }
 }
