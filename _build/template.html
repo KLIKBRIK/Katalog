@@ -131,7 +131,8 @@ a.name:hover{color:var(--orange-deep)}
 .pcard .chs div:first-child{background:#fff3ec}
 .pcard .chs div:first-child b{color:var(--orange-deep);font-size:15px}
 .pcard small{font-size:11px;color:var(--muted);line-height:1.3}
-.giftbtn{margin-top:12px}
+.psub{font-size:17px;font-weight:800;margin:16px 0 10px}
+.pcard .btn.safe{border:1.5px solid var(--ink);color:var(--ink);background:#fff}
 .pbgo{display:inline-block;margin-top:6px;background:#fff;color:#e0115f;font-size:13px;padding:5px 12px;border-radius:999px}
 .stk{display:inline-block;align-self:flex-start;font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px}
 .stk.rs{background:#e6f4ec;color:#127a46}
@@ -414,7 +415,8 @@ function pimg(n){ return PHOTOS.has(n) ? `img/${n}.jpg` : `mp/${n}.jpg`; }
 const PFB = `onerror="this.onerror=null;this.src='https://cdn.rebrickable.com/media/sets/'+this.dataset.n+'-1.jpg'"`;
 function paketCard(b){
   const m = byNo[b.main]||{}, g = byNo[b.gift]||{};
-  const msg = `Halo KlikBrik! Saya mau order PAKET BONUS ${CAMP.name}:\n${b.main} ${b.mainName} + GRATIS ${b.gift} ${b.giftName}\nHarga paket: ${rp(b.dm)}\nApakah masih bisa?`;
+  const kind = b.gs ? "GRATIS SET" : "PAKET BONUS";
+  const msg = `Halo KlikBrik! Saya mau order ${kind} ${CAMP.name}:\n${b.main} ${b.mainName} + GRATIS ${b.gift} ${b.giftName}\nHarga: ${rp(b.dm)}\nApakah masih bisa?`;
   const worth = (m.dm||0)+(g.dm||0);
   return `<article class="pcard">
     <div class="pics"><a href="set/${b.main}/"><img loading="lazy" data-n="${b.main}" ${PFB} src="${pimg(b.main)}" alt="${esc(b.mainName)}"></a><span class="plus">+</span><a class="gfree" href="set/${b.gift}/"><img loading="lazy" data-n="${b.gift}" ${PFB} src="${pimg(b.gift)}" alt="${esc(b.giftName)}"><b>GRATIS</b></a></div>
@@ -422,19 +424,22 @@ function paketCard(b){
       <div class="pname">${esc(b.mainName)} <span>+ GRATIS ${esc(b.giftName)}</span></div>
       <div class="setno">No. set ${b.main} + ${b.gift}${worth>b.dm?` · nilai normal ${rp(worth)}`:''}</div>
       <div class="chs"><div>Direct (WA)<b>${rp(b.dm)}</b></div><div>Shopee<b>${rp(b.shp)}</b></div><div>Tokopedia<b>${rp(b.tok)}</b></div></div>
-      <a class="btn wa" href="${waLink(msg)}" target="_blank" rel="noopener">Order Paket via WA</a>
-      <small>Di Shopee / Tokopedia: cari "Paket ${esc(b.mainName)}" di toko KlikBrik!. ${esc(b.mainName)} tanpa bonus tetap bisa dibeli dengan harga promo.</small>
+      <a class="btn wa" href="${waLink(msg)}" target="_blank" rel="noopener">Order via WA</a>
+      ${b.gs ? `<a class="btn safe" href="set/${b.main}/">🛒 Beli via Shopee / Tokopedia</a><small>Harga normal, bonus ${esc(b.giftName)} GRATIS di semua kanal.</small>`
+             : `<small>Di Shopee / Tokopedia: cari "Paket ${esc(b.mainName)}" di toko KlikBrik!. ${esc(b.mainName)} tanpa bonus tetap bisa dibeli dengan harga promo.</small>`}
     </div>
   </article>`;
 }
 function renderPaket(){
   const el = $("paket"); if (!el) return;
-  const nGift = DATA.filter(d=>d.cp&&d.cp.gift).length;
-  const show = CAMP && state.special==="camp" && !state.q.trim() && !state.theme && state.budget==="all" && (BUNDLES.length || nGift);
+  const GS = DATA.filter(d=>d.cp&&d.cp.gift).sort((a,b)=>b.cp.dmN-a.cp.dmN).map(d=>({gs:1, main:d.n, mainName:d.name, gift:d.cp.giftNo, giftName:d.cp.gift, dm:d.cp.dmN, shp:d.cp.shpN||d.shp, tok:d.cp.tokN||d.tok}));
+  const show = CAMP && state.special==="camp" && !state.q.trim() && !state.theme && state.budget==="all" && (BUNDLES.length || GS.length);
   el.hidden = !show; if (!show) return;
-  el.innerHTML = (BUNDLES.length ? `<h2>🎁 Paket Bonus ${esc(CAMP.name)}</h2><p>Beli set utama dengan harga paket, dapat set kecil GRATIS. Berlaku sampai ${new Date(CAMP.end+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"long"})} 23.59 WIB.</p><div class="pgrid">${BUNDLES.map(paketCard).join("")}</div>` : '')
-    + (nGift ? `<button class="chip hot giftbtn" id="giftonly" aria-pressed="${state.gift}">🎁 ${state.gift?'Tampilkan semua promo':nGift+' set dengan bonus GRATIS set'}</button>` : '');
-  const gb = $("giftonly"); if (gb) gb.onclick = () => { state.gift=!state.gift; state.shown=48; render(); };
+  const until = new Date(CAMP.end+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"long"}) + " 23.59 WIB";
+  el.innerHTML = `<h2>🎁 Bundling ${esc(CAMP.name)} (${BUNDLES.length+GS.length})</h2><p>Semua set di bawah dapat set kecil GRATIS. Berlaku sampai ${until}.</p>`
+    + (BUNDLES.length ? `<h3 class="psub">Paket Bonus (${BUNDLES.length}) · harga paket</h3><div class="pgrid">${BUNDLES.map(paketCard).join("")}</div>` : '')
+    + (GS.length ? `<h3 class="psub">Gratis Set (${GS.length}) · harga normal + bonus GRATIS</h3><div class="pgrid">${GS.map(paketCard).join("")}</div>` : '')
+    + `<h3 class="psub">Semua set promo ${esc(CAMP.name)}</h3>`;
 }
 function render(){
   renderPaket();
